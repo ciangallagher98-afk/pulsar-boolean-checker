@@ -130,6 +130,15 @@
   .expand-btn:hover{background:rgba(79,110,247,.14);}
 
   .idle-msg{color:var(--muted);font-size:13px;text-align:center;padding:40px 20px;}
+
+  .meta-warn{
+    background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.28);
+    border-radius:6px;padding:8px 11px;margin-top:8px;
+  }
+  .meta-warn-title{font-size:11.5px;font-weight:700;color:var(--yellow);margin-bottom:5px;}
+  .meta-warn-item{font-size:11px;color:#d4a843;padding:2px 0;display:flex;gap:6px;}
+  .meta-warn-item code{font-family:'Menlo','Fira Code',monospace;background:rgba(245,158,11,.15);
+    padding:1px 5px;border-radius:3px;color:var(--yellow);font-size:10.5px;}
 </style>
 </head>
 <body>
@@ -347,6 +356,39 @@ function generateSummary(result){
   return items;
 }
 
+// ─── META-OPERATOR DETECTION ─────────────────────────────────────────────────
+function detectMetaOperators(boolStr){
+  const s = boolStr.toUpperCase();
+  const found = [];
+
+  // Language filter
+  const langMatch = boolStr.match(/\bLANG:\S+/gi);
+  if(langMatch) found.push({code: langMatch.join(', '), desc: 'Language filter — Pulsar only ingests content in the specified language(s)'});
+
+  // Location filter
+  const locMatch = boolStr.match(/\bLOCATION\s*:\s*"[^"]*"/gi) || boolStr.match(/\bLOCATION\s*:\S+/gi);
+  if(locMatch) found.push({code: locMatch.join(', '), desc: 'Location filter — for news articles, only articles whose domain is registered to that country will be ingested (e.g. LOCATION:"gb" requires a .co.uk / .gov.uk / GB-registered domain). For social posts, this filters by the account\'s stated location.'});
+
+  // NOT RETWEET / NOT RT
+  if(/\bNOT\s+RETWEET\b/i.test(boolStr) || /\bNOT\s+RT\b/i.test(boolStr))
+    found.push({code: 'NOT RETWEET', desc: 'Retweets excluded — retweet status is a platform signal, not visible in text'});
+
+  // NOT QUOTE
+  if(/\bNOT\s+QUOTE\b/i.test(boolStr))
+    found.push({code: 'NOT QUOTE', desc: 'Quote tweets excluded — quote status is a platform signal, not visible in text'});
+
+  // NOT REPLY
+  if(/\bNOT\s+REPLY\b/i.test(boolStr))
+    found.push({code: 'NOT REPLY', desc: 'Replies excluded — reply status is a platform signal, not visible in text'});
+
+  // Positive RETWEET/QUOTE/REPLY (only counting, not NOT)
+  if(/(?<!NOT\s)\bRETWEET\b/i.test(boolStr.replace(/NOT\s+RETWEET/gi,'')) ||
+     /(?<!NOT\s)\bRT\b/.test(boolStr.replace(/NOT\s+RT/gi,'')))
+    found.push({code: 'RETWEET', desc: 'Retweet required — only retweets will match; not detectable from text alone'});
+
+  return found;
+}
+
 // ─── STATS ────────────────────────────────────────────────────────────────────
 function countLeaves(r){
   if(!r.kids||!r.kids.length)return{total:1,matched:r.m?1:0};
@@ -466,6 +508,8 @@ function runCheck(){
     resultsArea.innerHTML=`<div class="idle-msg">❌ Boolean parse error: ${e.message}</div>`;return;
   }
 
+  const metaOps = detectMetaOperators(boolStr);
+
   const cards=document.querySelectorAll('.item-card');
   if(!cards.length){
     resultsArea.innerHTML='<div class="idle-msg">Add at least one article or post to test.</div>';return;
@@ -521,6 +565,14 @@ function runCheck(){
         </div>`;
       body.appendChild(d);
     });
+
+    // Meta-operator warning (shown on matches only)
+    if(result.m && metaOps.length){
+      const warn=document.createElement('div');warn.className='meta-warn';
+      warn.innerHTML=`<div class="meta-warn-title">⚠ Additional filters in your boolean may still prevent ingestion</div>`+
+        metaOps.map(op=>`<div class="meta-warn-item"><code>${op.code}</code><span>${op.desc}</span></div>`).join('');
+      body.appendChild(warn);
+    }
 
     // Stats line
     const statsLine=document.createElement('div');
