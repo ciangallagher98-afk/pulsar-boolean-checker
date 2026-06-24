@@ -13,243 +13,216 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
 
-  header{padding:16px 24px 12px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:14px;}
-  header h1{font-size:18px;font-weight:700;}
-  header p{color:var(--muted);font-size:12.5px;}
+  header{padding:14px 22px 11px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:12px;}
+  header h1{font-size:17px;font-weight:700;}
+  header p{color:var(--muted);font-size:12px;}
 
-  .layout{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 53px);}
-  .panel{padding:18px 22px;overflow-y:auto;}
-  .panel-left{border-right:1px solid var(--border);display:flex;flex-direction:column;gap:14px;}
+  .layout{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 50px);}
+  .panel{padding:16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+  .panel-left{border-right:1px solid var(--border);}
 
-  h2{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:6px;}
+  h2{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:5px;}
 
   textarea,input[type=text]{
     width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-    color:var(--text);font-size:12.5px;padding:8px 11px;resize:vertical;outline:none;
+    color:var(--text);font-size:12.5px;padding:7px 10px;resize:vertical;outline:none;
     transition:border-color .15s;font-family:'Menlo','Fira Code',monospace;
   }
   textarea:focus,input:focus{border-color:var(--accent);}
 
-  /* URL row */
-  .url-row{display:flex;gap:6px;align-items:center;}
-  .url-row input{flex:1;resize:none;}
+  /* Item cards */
+  .items-header{display:flex;align-items:center;justify-content:space-between;}
+  .btn-add{
+    font-size:12px;font-weight:600;color:var(--accent);background:rgba(79,110,247,.1);
+    border:1px solid rgba(79,110,247,.3);border-radius:6px;padding:4px 10px;cursor:pointer;
+  }
+  .btn-add:hover{background:rgba(79,110,247,.18);}
+
+  #itemsList{display:flex;flex-direction:column;gap:10px;}
+
+  .item-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;}
+  .item-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+  .item-num{font-size:11px;font-weight:700;color:var(--muted);}
+  .btn-remove{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;padding:0 2px;}
+  .btn-remove:hover{color:var(--red);}
+
+  .url-row{display:flex;gap:6px;margin-bottom:5px;}
+  .url-row input{flex:1;font-size:12px;}
   .btn-fetch{
     background:var(--surface2);color:var(--text);border:1px solid var(--border);
-    border-radius:var(--r);font-size:12px;font-weight:600;padding:7px 13px;
-    cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;
+    border-radius:var(--r);font-size:11.5px;font-weight:600;padding:5px 10px;
+    cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;
   }
   .btn-fetch:hover{border-color:var(--accent);color:var(--accent);}
-  .btn-fetch.loading{opacity:.6;cursor:default;}
 
-  .fetch-status{font-size:11.5px;color:var(--muted);margin-top:4px;min-height:15px;}
-  .fetch-status.ok{color:var(--green);}
-  .fetch-status.err{color:var(--red);}
-  .fetch-status.warn{color:var(--yellow);}
+  .item-status{font-size:11px;margin-bottom:5px;min-height:14px;color:var(--muted);}
+  .item-status.ok{color:var(--green);}
+  .item-status.err{color:var(--red);}
+  .item-status.warn{color:var(--yellow);}
+  .item-status.loading{color:var(--accent);}
 
-  .or-divider{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
-  .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+  .or-sep{font-size:10.5px;color:var(--muted);text-align:center;margin:4px 0 3px;}
 
+  /* Check button */
   .btn-check{
     width:100%;padding:10px;background:var(--accent);color:#fff;
-    font-size:13.5px;font-weight:700;cursor:pointer;border:none;border-radius:var(--r);
-    transition:opacity .15s;
+    font-size:13px;font-weight:700;cursor:pointer;border:none;border-radius:var(--r);
+    transition:opacity .15s;flex-shrink:0;
   }
   .btn-check:hover{opacity:.88;}
 
-  /* ── Right panel ── */
+  /* ── Result cards ── */
+  #resultsArea{display:flex;flex-direction:column;gap:10px;}
 
-  /* Source label strip */
-  .source-label{
-    font-size:11px;color:var(--muted);background:var(--surface);
-    border:1px solid var(--border);border-radius:var(--r);
-    padding:6px 11px;margin-bottom:10px;word-break:break-all;line-height:1.4;
+  .result-card{border-radius:var(--r);border:1px solid var(--border);overflow:hidden;}
+  .result-card.match  {border-color:rgba(34,197,94,.3);}
+  .result-card.nomatch{border-color:rgba(239,68,68,.3);}
+  .result-card.idle   {border-color:var(--border);}
+
+  .result-head{
+    display:flex;align-items:flex-start;gap:10px;padding:10px 13px;
+    border-bottom:1px solid var(--border);
   }
-  .source-label strong{color:var(--text);}
+  .result-card.match   .result-head{background:rgba(34,197,94,.06);}
+  .result-card.nomatch .result-head{background:rgba(239,68,68,.06);}
+  .result-card.idle    .result-head{background:var(--surface);}
 
-  /* Verdict */
-  .verdict{border-radius:var(--r);padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
-  .verdict.match  {background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);}
-  .verdict.nomatch{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);}
-  .verdict.idle   {background:var(--surface);border:1px solid var(--border);}
-  .verdict-icon{font-size:24px;flex-shrink:0;line-height:1;}
-  .verdict-title{font-size:15px;font-weight:700;line-height:1.3;}
-  .verdict.match   .verdict-title{color:var(--green);}
-  .verdict.nomatch .verdict-title{color:var(--red);}
-  .verdict-url{font-size:11.5px;color:var(--muted);margin-top:3px;word-break:break-all;}
+  .result-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+  .result-verdict{font-size:13px;font-weight:700;line-height:1.2;}
+  .result-card.match   .result-verdict{color:var(--green);}
+  .result-card.nomatch .result-verdict{color:var(--red);}
+  .result-source{font-size:11px;color:var(--muted);margin-top:2px;word-break:break-all;}
 
-  /* Why list */
-  .why-list{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
-  .why-item{display:flex;gap:9px;padding:9px 11px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);}
-  .why-item.ok {border-color:rgba(34,197,94,.28);}
-  .why-item.bad{border-color:rgba(239,68,68,.28);}
-  .why-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
-  .why-text strong{display:block;font-size:12.5px;font-weight:600;line-height:1.3;}
-  .why-text span{font-size:11.5px;color:var(--muted);}
+  .result-body{padding:8px 13px 10px;}
 
-  /* Stats */
-  .stats{display:flex;gap:6px;margin-bottom:10px;}
-  .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;flex:1;text-align:center;}
-  .stat-val{font-size:18px;font-weight:700;}
-  .stat-lab{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-  .stat-val.g{color:var(--green);} .stat-val.r{color:var(--red);}
+  .why-item{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+  .why-item:last-child{border-bottom:none;}
+  .why-icon{font-size:13px;flex-shrink:0;margin-top:1px;}
+  .why-text strong{display:block;font-size:12px;font-weight:600;line-height:1.3;}
+  .why-text span{font-size:11px;color:var(--muted);}
 
-  hr.div{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .tree-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;display:inline-block;margin-top:6px;}
+  .tree-toggle:hover{color:var(--text);}
+  .result-tree{display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
 
   /* Tree */
-  .tree{font-size:12px;}
-  .tree-node{margin:2px 0;}
-  .row{display:flex;align-items:flex-start;gap:6px;padding:2px 6px;border-radius:4px;cursor:default;}
+  .tree{font-size:11.5px;}
+  .tree-node{margin:1px 0;}
+  .row{display:flex;align-items:flex-start;gap:5px;padding:2px 5px;border-radius:3px;cursor:default;}
   .row:hover{background:var(--surface2);}
   .row.click{cursor:pointer;}
-  .tog{width:12px;flex-shrink:0;font-size:9px;color:var(--muted);margin-top:3px;}
-  .ic{flex-shrink:0;font-size:12px;}
+  .tog{width:11px;flex-shrink:0;font-size:8px;color:var(--muted);margin-top:3px;}
+  .ic{flex-shrink:0;font-size:11px;}
   .lbl{flex:1;} .lbl .kd{font-weight:700;margin-right:3px;}
   .kd.or{color:#818cf8;} .kd.and{color:#38bdf8;} .kd.not_{color:var(--yellow);}
-  .kd.near{color:var(--purple);} .kd.skip{color:var(--muted);}
+  .kd.near{color:var(--purple);}
   .lbl .dt{color:var(--muted);}
   .lbl .hit{color:var(--green);font-weight:600;}
   .lbl .miss{color:var(--red);}
-  .children{margin-left:18px;border-left:1px solid var(--border);padding-left:8px;}
+  .children{margin-left:16px;border-left:1px solid var(--border);padding-left:7px;}
   .collapsed>.children{display:none;}
 
   .expand-btn{
-    display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--accent);
+    display:inline-flex;align-items:center;gap:4px;font-size:10.5px;color:var(--accent);
     cursor:pointer;padding:2px 7px;border-radius:4px;margin:2px 0;
     border:1px solid rgba(79,110,247,.22);background:rgba(79,110,247,.06);
   }
   .expand-btn:hover{background:rgba(79,110,247,.14);}
 
-  .tree-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;display:inline-block;}
-  .tree-toggle:hover{color:var(--text);}
-  #fullTree{display:none;}
+  .idle-msg{color:var(--muted);font-size:13px;text-align:center;padding:40px 20px;}
 </style>
 </head>
 <body>
 
 <header>
   <h1>🔍 Pulsar Boolean Checker</h1>
-  <p>Test whether an article or post would be ingested by a Pulsar search.</p>
+  <p>Test multiple articles or posts against a boolean — see exactly why each one would or wouldn't be ingested.</p>
 </header>
 
 <div class="layout">
 
-<!-- ── LEFT: inputs ── -->
+<!-- ── LEFT ── -->
 <div class="panel panel-left">
 
   <div>
     <h2>Boolean String</h2>
-    <textarea id="boolInput" rows="8" placeholder='("Humanitarian aid" OR "International aid" OR ODA) AND NOT (jobs OR hiring) AND NOT RETWEET'></textarea>
+    <textarea id="boolInput" rows="7" placeholder='("Humanitarian aid" OR "International aid" OR ODA) AND NOT ("Gaza" OR "Palestine") AND NOT RETWEET'></textarea>
   </div>
 
   <div>
-    <h2>Article / Post URL</h2>
-    <div class="url-row">
-      <input type="text" id="urlInput" placeholder="https://…  (press Enter or click Fetch)"/>
-      <button class="btn-fetch" id="fetchBtn" onclick="fetchURL()">Fetch</button>
+    <div class="items-header">
+      <h2>Content to test</h2>
+      <button class="btn-add" onclick="addItem()">+ Add article / post</button>
     </div>
-    <div class="fetch-status" id="fetchStatus"></div>
+    <div id="itemsList"></div>
   </div>
 
-  <div class="or-divider">or paste text directly</div>
-
-  <div style="flex:1">
-    <textarea id="contentInput" rows="10" style="height:100%;min-height:120px" placeholder="Paste full article text, tweet, LinkedIn post… Content fetched above will appear here automatically."></textarea>
-  </div>
-
-  <button class="btn-check" onclick="runCheck()">▶  Check</button>
+  <button class="btn-check" onclick="runCheck()">▶  Check all</button>
 
 </div>
 
-<!-- ── RIGHT: results ── -->
+<!-- ── RIGHT ── -->
 <div class="panel panel-right">
-  <h2>Result</h2>
-
-  <div class="verdict idle" id="verdict">
-    <div class="verdict-icon">🔍</div>
-    <div><div class="verdict-title">Waiting</div><div class="verdict-url">Enter a boolean and content, then click Check.</div></div>
+  <h2>Results</h2>
+  <div id="resultsArea">
+    <div class="idle-msg">Results will appear here after you click Check all.</div>
   </div>
-
-  <div id="whyList" class="why-list" style="display:none"></div>
-
-  <div id="statsRow" class="stats" style="display:none">
-    <div class="stat"><div class="stat-val g" id="sMatch">—</div><div class="stat-lab">Matched</div></div>
-    <div class="stat"><div class="stat-val r" id="sFail">—</div><div class="stat-lab">Failed</div></div>
-    <div class="stat"><div class="stat-val"   id="sTotal">—</div><div class="stat-lab">Clauses</div></div>
-  </div>
-
-  <hr class="div" id="treeDivider" style="display:none"/>
-  <span class="tree-toggle" id="treeToggle" style="display:none" onclick="toggleTree()">▶ Show full clause breakdown</span>
-  <div class="tree" id="fullTree"></div>
 </div>
 
-</div><!-- .layout -->
+</div>
 
 <script>
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-
-const PULSAR_META = new Set([
-  'location','lang','language','retweet','reply','gb','us','uk','en','fr','de',
-  'au','ca','nz','ie','za','sg','in','jp','kr','br','mx','es','it','pl','nl',
-]);
-
-const PLATFORM_WORDS = new Set([
-  'twitch','pinterest','instagram','facebook','reddit','linkedin','youtube',
-  'tiktok','tumblr','blog','twitter','x','weibo','discord','telegram','snapchat',
-]);
+// ─── IDs ─────────────────────────────────────────────────────────────────────
+let nextId = 1;
 
 // ─── TOKENISER ────────────────────────────────────────────────────────────────
-
 const TK={OR:'OR',AND:'AND',NOT:'NOT',NEAR:'NEAR',LP:'LP',RP:'RP',PHRASE:'PHRASE',WORD:'WORD',FIELD:'FIELD',EOF:'EOF'};
 class Tok{constructor(k,v='',n=0){this.kind=k;this.val=v;this.nearN=n;}}
 
 function tokenise(q){
-  const t=[];let i=0,n=q.length;
-  while(i<n){
+  const t=[];let i=0,L=q.length;
+  while(i<L){
     const c=q[i];
     if(/\s/.test(c)){i++;continue;}
-    if(c==='('){t.push(new Tok(TK.LP,'('));i++;continue;}
-    if(c===')'){t.push(new Tok(TK.RP,')'));i++;continue;}
-    if(c==='"'){let j=q.indexOf('"',i+1);if(j===-1)j=n;t.push(new Tok(TK.PHRASE,q.slice(i+1,j)));i=j+1;continue;}
+    if(c==='('){t.push(new Tok(TK.LP));i++;continue;}
+    if(c===')'){t.push(new Tok(TK.RP));i++;continue;}
+    if(c==='"'){let j=q.indexOf('"',i+1);if(j<0)j=L;t.push(new Tok(TK.PHRASE,q.slice(i+1,j)));i=j+1;continue;}
     if(c==='-'){t.push(new Tok(TK.NOT,'-'));i++;continue;}
-    let j=i;while(j<n&&!/\s/.test(q[j])&&!'()"'.includes(q[j]))j++;
+    let j=i;while(j<L&&!/\s/.test(q[j])&&!'()"'.includes(q[j]))j++;
     const w=q.slice(i,j),up=w.toUpperCase().replace(/\($/,'');
-    if(up==='AND')t.push(new Tok(TK.AND,'AND'));
-    else if(up==='OR')t.push(new Tok(TK.OR,'OR'));
-    else if(up==='NOT'){t.push(new Tok(TK.NOT,'NOT'));if(w.endsWith('('))t.push(new Tok(TK.LP,'('));}
+    if(up==='AND')t.push(new Tok(TK.AND));
+    else if(up==='OR')t.push(new Tok(TK.OR));
+    else if(up==='NOT'){t.push(new Tok(TK.NOT,'NOT'));if(w.endsWith('('))t.push(new Tok(TK.LP));}
     else if(/^NEAR\/\d+$/.test(up))t.push(new Tok(TK.NEAR,w,parseInt(up.slice(5))));
     else if(w.includes(':')&&!w.startsWith(':')&&!w.endsWith(':'))t.push(new Tok(TK.FIELD,w));
     else t.push(new Tok(TK.WORD,w));
     i=j;
   }
-  t.push(new Tok(TK.EOF,''));
-  return t;
+  t.push(new Tok(TK.EOF));return t;
 }
 
 // ─── AST ──────────────────────────────────────────────────────────────────────
-
-class N{constructor(k,o={}){this.kind=k;this.children=o.c||[];this.value=o.v||'';this.nearN=o.n||0;this.fieldName=o.fn||'';this.fieldVal=o.fv||'';}}
+class N{constructor(k,o={}){this.kind=k;this.children=o.c||[];this.value=o.v||'';this.nearN=o.n||0;}}
 
 // ─── PARSER ───────────────────────────────────────────────────────────────────
-
 class Parser{
   constructor(t){this.t=t;this.p=0;}
   peek(){return this.t[this.p];}
-  eat(k){const t=this.t[this.p];if(k&&t.kind!==k)throw new Error(`Expected ${k} got ${t.kind} "${t.val}"`);this.p++;return t;}
+  eat(k){const t=this.t[this.p];if(k&&t.kind!==k)throw new Error(`Expected ${k}, got "${t.val||t.kind}"`);this.p++;return t;}
   parse(){return this.or();}
   or(){
     let l=this.and();
     while(this.peek().kind===TK.OR){this.eat();const r=this.and();
-      if(l.kind==='or')l.children.push(r);else l=new N('or',{c:[l,r]});}
+      l=l.kind==='or'?(l.children.push(r),l):new N('or',{c:[l,r]});}
     return l;
   }
   and(){
     let l=this.not();
     while(![TK.OR,TK.RP,TK.EOF].includes(this.peek().kind)){
       if(this.peek().kind===TK.AND)this.eat();
-      else if([TK.NOT,TK.LP,TK.PHRASE,TK.WORD,TK.FIELD].includes(this.peek().kind)){}
-      else break;
+      else if(![TK.NOT,TK.LP,TK.PHRASE,TK.WORD,TK.FIELD].includes(this.peek().kind))break;
       const r=this.not();
-      if(l.kind==='and')l.children.push(r);else l=new N('and',{c:[l,r]});
+      l=l.kind==='and'?(l.children.push(r),l):new N('and',{c:[l,r]});
     }
     return l;
   }
@@ -266,15 +239,7 @@ class Parser{
     const t=this.peek();
     if(t.kind===TK.LP){this.eat(TK.LP);const n=this.or();if(this.peek().kind===TK.RP)this.eat();return n;}
     if(t.kind===TK.PHRASE){this.eat();return new N('phrase',{v:t.val});}
-    if(t.kind===TK.FIELD){this.eat();const p=t.val.split(':',2);return new N('field',{fn:p[0],fv:p[1]||''});}
-    if(t.kind===TK.WORD){
-      this.eat();
-      if(PLATFORM_WORDS.has(t.val.toLowerCase())&&this.peek().kind===TK.LP){
-        this.eat(TK.LP);const inner=this.or();if(this.peek().kind===TK.RP)this.eat();
-        return new N('platform',{v:t.val,c:[inner]});
-      }
-      return new N('word',{v:t.val});
-    }
+    if(t.kind===TK.FIELD){this.eat();const[fn,fv]=t.val.split(':');return new N('field',{v:t.val,c:[],fn,fv:fv||''});}
     if(t.kind===TK.NOT){this.eat();return new N('not',{c:[this.primary()]});}
     this.eat();return new N('word',{v:t.val});
   }
@@ -283,76 +248,66 @@ class Parser{
 function parseBoolean(q){return new Parser(tokenise(q)).parse();}
 
 // ─── EVALUATOR ────────────────────────────────────────────────────────────────
-
 function surface(n){return n.value||(n.children||[]).map(surface).join(' ');}
 
-function evaluate(node,content,url=''){
+function evaluate(node,text){
+  const t=text;
   switch(node.kind){
     case 'or':{
-      const kids=node.children.map(c=>evaluate(c,content,url));
-      const matched=kids.some(r=>r.matched);
-      const nm=kids.filter(r=>r.matched).length;
-      return{matched,label:'OR',detail:`${nm}/${kids.length} clauses matched`,children:kids,nodeKind:'or'};
+      const kids=node.children.map(c=>evaluate(c,t));
+      const nm=kids.filter(r=>r.m).length;
+      return{m:nm>0,label:'OR',detail:`${nm}/${kids.length} matched`,kids,nk:'or'};
     }
     case 'and':{
-      const kids=node.children.map(c=>evaluate(c,content,url));
-      const matched=kids.every(r=>r.matched);
-      const nf=kids.filter(r=>!r.matched).length;
-      return{matched,label:'AND',detail:matched?`all ${kids.length} matched`:`${nf} clause(s) failed`,children:kids,nodeKind:'and'};
+      const kids=node.children.map(c=>evaluate(c,t));
+      const nf=kids.filter(r=>!r.m).length;
+      return{m:nf===0,label:'AND',detail:nf===0?`all ${kids.length} matched`:`${nf} failed`,kids,nk:'and'};
     }
     case 'not':{
-      const kid=evaluate(node.children[0],content,url);
-      return{matched:!kid.matched,label:'NOT',
-        detail:kid.matched?'exclusion term found → fails':'exclusion absent → passes',
-        children:[kid],nodeKind:'not'};
+      const kid=evaluate(node.children[0],t);
+      return{m:!kid.m,label:'NOT',detail:kid.m?'exclusion found → fails':'exclusion absent → passes',kids:[kid],nk:'not'};
     }
     case 'near':{
-      const t1=surface(node.children[0]).toLowerCase(),t2=surface(node.children[1]).toLowerCase();
-      const words=(content.toLowerCase().match(/\w+/g)||[]);
-      const p1=words.flatMap((w,i)=>w.includes(t1)?[i]:[]);
-      const p2=words.flatMap((w,i)=>w.includes(t2)?[i]:[]);
-      const matched=p1.some(a=>p2.some(b=>Math.abs(a-b)<=node.nearN));
-      return{matched,label:`NEAR/${node.nearN}`,detail:`"${t1}" & "${t2}" — ${matched?'within range':'not within range'}`,children:[],nodeKind:'near'};
+      const a=surface(node.children[0]).toLowerCase(),b=surface(node.children[1]).toLowerCase();
+      const ws=(t.toLowerCase().match(/\w+/g)||[]);
+      const pa=ws.flatMap((w,i)=>w.includes(a)?[i]:[]);
+      const pb=ws.flatMap((w,i)=>w.includes(b)?[i]:[]);
+      const m=pa.some(x=>pb.some(y=>Math.abs(x-y)<=node.nearN));
+      return{m,label:`NEAR/${node.nearN}`,detail:`"${a}" & "${b}" — ${m?'within':'not within'} range`,kids:[],nk:'near'};
     }
     case 'phrase':{
-      const matched=content.toLowerCase().includes(node.value.toLowerCase());
-      return{matched,label:'phrase',detail:`"${node.value}"`,children:[],nodeKind:'phrase'};
+      const m=t.toLowerCase().includes(node.value.toLowerCase());
+      return{m,label:'phrase',detail:`"${node.value}"`,kids:[],nk:'phrase'};
     }
     case 'word':{
       const w=node.value.replace(/['\.,;:!?*]+$/,'');
-      const wl=w.toLowerCase();
-      if(PULSAR_META.has(wl)){
-        return{matched:true,label:'skip',detail:`${node.value} (Pulsar filter — skipped)`,children:[],nodeKind:'skip'};
-      }
-      const matched=w?new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(content):false;
-      return{matched,label:'word',detail:`"${node.value}"`,children:[],nodeKind:'word'};
+      const m=w?new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(t):false;
+      return{m,label:'word',detail:`"${node.value}"`,kids:[],nk:'word'};
     }
     case 'field':{
-      const fn=node.fieldName.toLowerCase(),fv=node.fieldVal.replace(/^"|"$/g,'').toLowerCase();
-      if(fn==='url'){const m=url.toLowerCase().includes(fv);return{matched:m,label:'url:',detail:`"${fv}" — ${m?'found in URL':'not found in URL'}`,children:[],nodeKind:'field'};}
-      return{matched:true,label:'skip',detail:`${node.fieldName}:${node.fieldVal} (Pulsar filter — skipped)`,children:[],nodeKind:'skip'};
+      // Only url: has meaning in text context; others just try to match the value
+      const fv=node.fv||'';
+      const m=fv?t.toLowerCase().includes(fv.toLowerCase()):false;
+      return{m,label:node.fn+':',detail:`"${fv}"`,kids:[],nk:'field'};
     }
-    case 'platform':
-      return{matched:true,label:'skip',detail:`${node.value} (...) — platform-scoped, skipped for text evaluation`,children:[],nodeKind:'skip'};
     default:
-      return{matched:true,label:'skip',detail:`(${node.kind})`,children:[],nodeKind:'skip'};
+      return{m:true,label:'?',detail:node.value||'',kids:[],nk:'skip'};
   }
 }
 
 // ─── SUMMARY ──────────────────────────────────────────────────────────────────
-
-function firstMatchedLeaf(r){
-  if(!r.children||!r.children.length)return r.matched?r.detail:null;
-  for(const c of r.children){const f=firstMatchedLeaf(c);if(f)return f;}
+function firstMatch(r){
+  if(!r.kids||!r.kids.length)return r.m?r.detail:null;
+  for(const c of r.kids){const f=firstMatch(c);if(f)return f;}
   return null;
 }
 
-function sampleTerms(r,max,wantMatched){
+function sampleLeaves(r,max,wantM){
   const out=[];
-  (function walk(r){
+  (function w(r){
     if(out.length>=max)return;
-    if(!r.children||!r.children.length){if(r.matched===wantMatched&&r.detail&&r.nodeKind!=='skip')out.push(r.detail);return;}
-    r.children.forEach(walk);
+    if(!r.kids||!r.kids.length){if(r.m===wantM&&r.detail&&r.nk!=='skip')out.push(r.detail);return;}
+    r.kids.forEach(w);
   })(r);
   return out;
 }
@@ -360,204 +315,236 @@ function sampleTerms(r,max,wantMatched){
 function generateSummary(result){
   const items=[];
   (function walk(r,depth){
-    if(depth>2||r.nodeKind==='skip')return;
-    if(r.nodeKind==='and'){r.children.forEach(c=>walk(c,depth+1));return;}
-    if(r.nodeKind==='or'){
-      if(r.matched){
-        const hits=sampleTerms(r,3,true);
-        items.push({ok:true,head:'Primary search terms matched',body:`Found: ${hits.join(', ')}`});
+    if(depth>3)return;
+    if(r.nk==='and'){r.kids.forEach(c=>walk(c,depth+1));return;}
+    if(r.nk==='or'){
+      if(r.m){
+        const hits=sampleLeaves(r,3,true);
+        items.push({ok:true,head:'Search terms matched',body:`Found: ${hits.join(', ')}`});
       } else {
-        const sample=sampleTerms(r,4,false);
+        const sample=sampleLeaves(r,4,false);
+        const extra=r.kids.length-4;
         items.push({ok:false,
-          head:'No primary search terms found in content',
-          body:`Searched for ${sample.join(', ')}${r.children.length>4?` and ${r.children.length-4} others`:''}`});
+          head:'No search terms found in content',
+          body:`Checked: ${sample.join(', ')}${extra>0?` and ${extra} others`:''}`});
       }
       return;
     }
-    if(r.nodeKind==='not'){
-      if(!r.matched){
-        const found=firstMatchedLeaf(r.children[0]);
+    if(r.nk==='not'){
+      if(!r.m){
+        const found=firstMatch(r.kids[0]);
         items.push({ok:false,
-          head:'Excluded — an exclusion term was found in content',
-          body:found?`Triggered by: ${found}`:'An entry in the exclusion list matched'});
+          head:'Excluded — a blocked term was found',
+          body:found?`Triggered by: ${found}`:'A term in the exclusion list matched'});
       } else {
-        items.push({ok:true,head:'Exclusion check passed',body:'No excluded terms present in content'});
+        items.push({ok:true,head:'Exclusion check passed',body:'No blocked terms found'});
       }
       return;
     }
-    if(r.nodeKind==='near'){items.push({ok:r.matched,head:`Proximity check: ${r.detail}`,body:''});return;}
-    if(!r.matched)items.push({ok:false,head:`Failed: ${r.label} ${r.detail||''}`,body:''});
+    if(r.nk==='near'){items.push({ok:r.m,head:`Proximity: ${r.detail}`,body:''});return;}
+    if(!r.m)items.push({ok:false,head:`Failed: ${r.label} ${r.detail}`,body:''});
   })(result,0);
   return items;
 }
 
 // ─── STATS ────────────────────────────────────────────────────────────────────
-
 function countLeaves(r){
-  if(r.nodeKind==='skip')return{total:0,matched:0};
-  if(!r.children||!r.children.length)return{total:1,matched:r.matched?1:0};
-  return r.children.reduce((a,c)=>{const s=countLeaves(c);return{total:a.total+s.total,matched:a.matched+s.matched};},{total:0,matched:0});
+  if(!r.kids||!r.kids.length)return{total:1,matched:r.m?1:0};
+  return r.kids.reduce((a,c)=>{const s=countLeaves(c);return{total:a.total+s.total,matched:a.matched+s.matched};},{total:0,matched:0});
 }
 
 // ─── TREE ─────────────────────────────────────────────────────────────────────
-
 const COLLAPSE=10;
-
-function buildTree(result,container,depth=0){
-  const isLeaf=!result.children||result.children.length===0;
-  const icon=result.nodeKind==='skip'?'⏭':result.matched?'✅':'❌';
+function buildTree(r,container,depth=0){
+  const isLeaf=!r.kids||!r.kids.length;
   const el=document.createElement('div');el.className='tree-node';
   const row=document.createElement('div');row.className='row';
   const tog=document.createElement('span');tog.className='tog';
-  const ic=document.createElement('span');ic.className='ic';ic.textContent=icon;
+  const ic=document.createElement('span');ic.className='ic';ic.textContent=r.nk==='skip'?'⏭':r.m?'✅':'❌';
   const lb=document.createElement('span');lb.className='lbl';
-  const kdSpan=document.createElement('span');
-  kdSpan.className='kd '+(result.nodeKind==='not'?'not_':result.nodeKind||'');
-  kdSpan.textContent=result.label||'';
-  const dtSpan=document.createElement('span');
-  dtSpan.className=isLeaf||result.nodeKind==='skip'?(result.nodeKind==='skip'?'dt':result.matched?'hit':'miss'):'dt';
-  dtSpan.textContent=' '+(result.detail||'');
-  lb.appendChild(kdSpan);lb.appendChild(dtSpan);
+  const kd=document.createElement('span');
+  kd.className='kd '+(r.nk==='not'?'not_':r.nk||'');
+  kd.textContent=r.label||'';
+  const dt=document.createElement('span');
+  dt.className=isLeaf?(r.m?'hit':'miss'):'dt';
+  dt.textContent=' '+(r.detail||'');
+  lb.appendChild(kd);lb.appendChild(dt);
   row.appendChild(tog);row.appendChild(ic);row.appendChild(lb);
   el.appendChild(row);container.appendChild(el);
-
-  if(result.children&&result.children.length>0){
+  if(r.kids&&r.kids.length){
     const cw=document.createElement('div');cw.className='children';
-    const vk=result.children.filter(c=>c.nodeKind!=='skip');
-    const collapse=vk.length>COLLAPSE&&depth>0;
-    if(collapse){
-      const nm=vk.filter(r=>r.matched).length,nf=vk.length-nm;
+    const col=r.kids.length>COLLAPSE&&depth>0;
+    if(col){
+      const nm=r.kids.filter(x=>x.m).length,nf=r.kids.length-nm;
       const btn=document.createElement('span');btn.className='expand-btn';
-      btn.innerHTML=`▶ Show all ${vk.length} branches (${nm} matched, ${nf} failed)`;
+      btn.innerHTML=`▶ Show all ${r.kids.length} (${nm} matched, ${nf} failed)`;
       let open=false;
       btn.onclick=()=>{open=!open;cw.style.display=open?'':'none';
-        btn.innerHTML=open?'▼ Collapse':`▶ Show all ${vk.length} branches (${nm} matched, ${nf} failed)`;};
+        btn.innerHTML=open?'▼ Collapse':`▶ Show all ${r.kids.length} (${nm} matched, ${nf} failed)`;};
       el.appendChild(btn);cw.style.display='none';
     } else {
       tog.textContent='▾';row.classList.add('click');
       row.onclick=()=>{el.classList.toggle('collapsed');tog.textContent=el.classList.contains('collapsed')?'▸':'▾';};
     }
-    result.children.forEach(c=>{if(c.nodeKind!=='skip')buildTree(c,cw,depth+1);});
+    r.kids.forEach(c=>buildTree(c,cw,depth+1));
     el.appendChild(cw);
   }
 }
 
-// ─── URL FETCHER ──────────────────────────────────────────────────────────────
+// ─── ITEM MANAGEMENT ─────────────────────────────────────────────────────────
+function addItem(){
+  const id=nextId++;
+  const card=document.createElement('div');
+  card.className='item-card';card.id=`item-${id}`;
+  card.innerHTML=`
+    <div class="item-card-header">
+      <span class="item-num">Article / post ${id}</span>
+      <button class="btn-remove" onclick="removeItem(${id})" title="Remove">×</button>
+    </div>
+    <div class="url-row">
+      <input type="text" id="url-${id}" placeholder="https://… (press Enter to fetch)"/>
+      <button class="btn-fetch" onclick="fetchItem(${id})">Fetch</button>
+    </div>
+    <div class="item-status" id="status-${id}"></div>
+    <div class="or-sep">— or paste text below —</div>
+    <textarea id="content-${id}" rows="4" placeholder="Paste article text, tweet, post…"></textarea>
+  `;
+  document.getElementById('itemsList').appendChild(card);
+  card.querySelector(`#url-${id}`).addEventListener('keydown',e=>{if(e.key==='Enter')fetchItem(id);});
+}
 
-async function fetchURL(){
-  const url=document.getElementById('urlInput').value.trim();
+function removeItem(id){
+  const el=document.getElementById(`item-${id}`);
+  if(el)el.remove();
+}
+
+async function fetchItem(id){
+  const urlEl=document.getElementById(`url-${id}`);
+  const status=document.getElementById(`status-${id}`);
+  const content=document.getElementById(`content-${id}`);
+  const url=urlEl.value.trim();
   if(!url)return;
-  const status=document.getElementById('fetchStatus');
-  const btn=document.getElementById('fetchBtn');
-  const out=document.getElementById('contentInput');
-  status.className='fetch-status';status.textContent='Fetching…';btn.classList.add('loading');btn.disabled=true;
+  status.className='item-status loading';status.textContent='Fetching…';content.value='';
   try{
     const res=await fetch('/.netlify/functions/fetch-url',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
     const data=await res.json();
     if(data.error)throw new Error(data.error);
-    if(data.warning){
-      status.className='fetch-status warn';status.textContent='⚠ '+data.warning;
-      out.value='';return;
-    }
-    out.value=data.text;
-    status.className='fetch-status ok';status.textContent=`✓ Fetched ${data.text.length.toLocaleString()} characters`;
+    if(data.warning){status.className='item-status warn';status.textContent='⚠ '+data.warning;return;}
+    content.value=data.text;
+    status.className='item-status ok';status.textContent=`✓ ${data.text.length.toLocaleString()} chars fetched`;
   }catch(e){
-    status.className='fetch-status err';status.textContent='Error: '+e.message;
-  }finally{
-    btn.classList.remove('loading');btn.disabled=false;
+    status.className='item-status err';status.textContent='Error: '+e.message;
   }
 }
 
-document.getElementById('urlInput').addEventListener('keydown',e=>{if(e.key==='Enter')fetchURL();});
-
-// ─── TREE TOGGLE ──────────────────────────────────────────────────────────────
-
-function toggleTree(){
-  const t=document.getElementById('fullTree');
-  const btn=document.getElementById('treeToggle');
-  const open=t.style.display!=='none';
-  t.style.display=open?'none':'';
-  btn.textContent=(open?'▶ Show':'▼ Hide')+' full clause breakdown';
-}
-
-// ─── CHECK ────────────────────────────────────────────────────────────────────
-
-function truncateUrl(u,max=70){
+// ─── TRUNCATE URL ─────────────────────────────────────────────────────────────
+function truncate(u,max=65){
   if(!u||u.length<=max)return u;
-  try{const p=new URL(u);return p.hostname+p.pathname.slice(0,max-p.hostname.length)+'…';}
+  try{const p=new URL(u);const path=p.pathname;return p.hostname+(path.length>30?path.slice(0,30)+'…':path);}
   catch{return u.slice(0,max)+'…';}
 }
 
+// ─── MAIN CHECK ───────────────────────────────────────────────────────────────
 function runCheck(){
   const boolStr=document.getElementById('boolInput').value.trim();
-  const content=document.getElementById('contentInput').value.trim();
-  const url=document.getElementById('urlInput').value.trim();
-
-  const verdict=document.getElementById('verdict');
-  const whyList=document.getElementById('whyList');
-  const statsRow=document.getElementById('statsRow');
-  const divider=document.getElementById('treeDivider');
-  const treeToggle=document.getElementById('treeToggle');
-  const fullTree=document.getElementById('fullTree');
-
-  whyList.innerHTML='';whyList.style.display='none';
-  statsRow.style.display='none';divider.style.display='none';
-  treeToggle.style.display='none';fullTree.innerHTML='';fullTree.style.display='none';
+  const resultsArea=document.getElementById('resultsArea');
+  resultsArea.innerHTML='';
 
   if(!boolStr){
-    verdict.className='verdict idle';
-    verdict.innerHTML='<div class="verdict-icon">⚠️</div><div><div class="verdict-title">No boolean entered</div><div class="verdict-url">Paste a boolean string in the left panel.</div></div>';
-    return;
-  }
-  if(!content){
-    verdict.className='verdict idle';
-    verdict.innerHTML='<div class="verdict-icon">⚠️</div><div><div class="verdict-title">No content to test</div><div class="verdict-url">Fetch a URL or paste text directly.</div></div>';
-    return;
+    resultsArea.innerHTML='<div class="idle-msg">⚠ Enter a boolean string first.</div>';return;
   }
 
-  let ast,result;
-  try{ast=parseBoolean(boolStr);result=evaluate(ast,content,url);}
+  let ast;
+  try{ast=parseBoolean(boolStr);}
   catch(e){
-    verdict.className='verdict idle';
-    verdict.innerHTML=`<div class="verdict-icon">🚫</div><div><div class="verdict-title">Parse error</div><div class="verdict-url">${e.message}</div></div>`;
-    return;
+    resultsArea.innerHTML=`<div class="idle-msg">❌ Boolean parse error: ${e.message}</div>`;return;
   }
 
-  const sourceLabel=url?`<strong>URL:</strong> ${truncateUrl(url)}`:'<strong>Source:</strong> Pasted text';
-
-  if(result.matched){
-    verdict.className='verdict match';
-    verdict.innerHTML=`<div class="verdict-icon">✅</div><div><div class="verdict-title">WOULD BE INGESTED</div><div class="verdict-url">${sourceLabel} <strong>matches</strong> this boolean and would be captured.</div></div>`;
-  } else {
-    verdict.className='verdict nomatch';
-    verdict.innerHTML=`<div class="verdict-icon">❌</div><div><div class="verdict-title">WOULD NOT BE INGESTED</div><div class="verdict-url">${sourceLabel} <strong>does not match</strong> this boolean — see reasons below.</div></div>`;
+  const cards=document.querySelectorAll('.item-card');
+  if(!cards.length){
+    resultsArea.innerHTML='<div class="idle-msg">Add at least one article or post to test.</div>';return;
   }
 
-  // Why list
-  const summary=generateSummary(result);
-  if(summary.length){
-    whyList.style.display='flex';
+  let anyContent=false;
+  cards.forEach((card,idx)=>{
+    const id=card.id.replace('item-','');
+    const url=document.getElementById(`url-${id}`).value.trim();
+    const content=document.getElementById(`content-${id}`).value.trim();
+    const label=url?truncate(url):`Pasted content ${idx+1}`;
+
+    const rc=document.createElement('div');
+
+    if(!content){
+      rc.className='result-card idle';
+      rc.innerHTML=`
+        <div class="result-head">
+          <div class="result-icon">⚠️</div>
+          <div><div class="result-verdict" style="color:var(--yellow)">No content</div>
+          <div class="result-source">${label} — fetch a URL or paste text</div></div>
+        </div>`;
+      resultsArea.appendChild(rc);return;
+    }
+
+    anyContent=true;
+    const result=evaluate(ast,content);
+    const summary=generateSummary(result);
+    const{total,matched}=countLeaves(result);
+
+    rc.className=`result-card ${result.m?'match':'nomatch'}`;
+
+    // Head
+    const head=document.createElement('div');head.className='result-head';
+    head.innerHTML=`
+      <div class="result-icon">${result.m?'✅':'❌'}</div>
+      <div>
+        <div class="result-verdict">${result.m?'WOULD BE INGESTED':'WOULD NOT BE INGESTED'}</div>
+        <div class="result-source">${label}</div>
+      </div>`;
+    rc.appendChild(head);
+
+    // Body
+    const body=document.createElement('div');body.className='result-body';
+
+    // Why items
     summary.forEach(item=>{
-      const div=document.createElement('div');
-      div.className='why-item '+(item.ok?'ok':'bad');
-      div.innerHTML=`<div class="why-icon">${item.ok?'✅':'❌'}</div><div class="why-text"><strong>${item.head}</strong>${item.body?`<span>${item.body}</span>`:''}</div>`;
-      whyList.appendChild(div);
+      const d=document.createElement('div');d.className='why-item';
+      d.innerHTML=`<div class="why-icon">${item.ok?'✅':'❌'}</div>
+        <div class="why-text">
+          <strong>${item.head}</strong>
+          ${item.body?`<span>${item.body}</span>`:''}
+        </div>`;
+      body.appendChild(d);
     });
-  }
 
-  // Stats
-  const{total,matched}=countLeaves(result);
-  document.getElementById('sMatch').textContent=matched;
-  document.getElementById('sFail').textContent=total-matched;
-  document.getElementById('sTotal').textContent=total;
-  statsRow.style.display='flex';
+    // Stats line
+    const statsLine=document.createElement('div');
+    statsLine.style.cssText='font-size:10.5px;color:var(--muted);margin-top:6px;';
+    statsLine.textContent=`${matched} of ${total} clauses matched`;
+    body.appendChild(statsLine);
 
-  // Tree
-  divider.style.display='';
-  treeToggle.style.display='inline-block';
-  treeToggle.textContent='▶ Show full clause breakdown';
-  buildTree(result,fullTree);
+    // Tree toggle
+    const tog=document.createElement('span');tog.className='tree-toggle';
+    tog.textContent='▶ Show full clause breakdown';
+    const treeDiv=document.createElement('div');treeDiv.className='result-tree';
+    buildTree(result,treeDiv);
+    tog.onclick=()=>{
+      const open=treeDiv.style.display!=='none';
+      treeDiv.style.display=open?'none':'';
+      tog.textContent=(open?'▶ Show':'▼ Hide')+' full clause breakdown';
+    };
+    body.appendChild(tog);
+    body.appendChild(treeDiv);
+
+    rc.appendChild(body);
+    resultsArea.appendChild(rc);
+  });
+
+  if(!anyContent)resultsArea.innerHTML='<div class="idle-msg">No content found — fetch URLs or paste text into the items.</div>';
 }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+addItem();
+addItem();
 </script>
 </body>
 </html>
