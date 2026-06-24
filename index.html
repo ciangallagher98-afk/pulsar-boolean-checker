@@ -426,13 +426,13 @@ async function fetchItem(id){
   if(!url)return;
   status.className='item-status loading';status.textContent='Fetching…';content.value='';
   try{
-    const res=await fetch('/.netlify/functions/fetch-url',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    const res=await fetch('/api/fetch-url',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
     const raw=await res.text();
     let data;
     try{data=JSON.parse(raw);}
     catch{
-      if(!res.ok)throw new Error(`Function unavailable (HTTP ${res.status}) — the hosting service may be out of credits. Paste the article text manually instead.`);
-      throw new Error('Server returned an unexpected response. Paste the article text manually instead.');
+      if(!res.ok)throw new Error(`Fetch function unavailable (HTTP ${res.status}) — paste the article text manually instead.`);
+      throw new Error('Server returned an unexpected response — paste the article text manually instead.');
     }
     if(data.error)throw new Error(data.error);
     if(data.warning){status.className='item-status warn';status.textContent='⚠ '+data.warning;return;}
