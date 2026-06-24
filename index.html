@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pulsar Boolean Checker</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #4f6ef7;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+
+  header { padding: 24px 32px 16px; border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  header p  { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; height: calc(100vh - 73px); }
+
+  .panel { padding: 24px 28px; overflow-y: auto; }
+  .panel-left  { border-right: 1px solid var(--border); }
+
+  h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 10px; }
+
+  .section { margin-bottom: 24px; }
+
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+
+  textarea, input[type="text"] {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text); font-size: 13px;
+    padding: 10px 12px; resize: vertical; outline: none; transition: border-color .15s;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+  textarea:focus, input:focus { border-color: var(--accent); }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+  .tab {
+    padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
+    background: transparent; border: 1px solid var(--border); color: var(--muted); transition: all .15s;
+  }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .input-row { display: flex; gap: 8px; }
+  .input-row input { flex: 1; }
+
+  button {
+    padding: 9px 18px; border-radius: var(--radius); font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; transition: all .15s;
+  }
+  .btn-fetch { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-fetch:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-check {
+    width: 100%; padding: 12px; background: var(--accent); color: #fff;
+    font-size: 14px; margin-top: 8px; border-radius: var(--radius);
+  }
+  .btn-check:hover { opacity: .9; }
+  .btn-check:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* Verdict */
+  .verdict { border-radius: var(--radius); padding: 20px 22px; margin-bottom: 20px; }
+  .verdict.match   { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.3); }
+  .verdict.nomatch { background: rgba(239,68,68,.1);  border: 1px solid rgba(239,68,68,.3); }
+  .verdict.empty   { background: var(--surface);      border: 1px solid var(--border); }
+  .verdict-icon { font-size: 32px; }
+  .verdict-title { font-size: 18px; font-weight: 700; margin: 6px 0 4px; }
+  .verdict.match   .verdict-title { color: var(--green); }
+  .verdict.nomatch .verdict-title { color: var(--red); }
+  .verdict-sub { color: var(--muted); font-size: 13px; }
+
+  /* Tree */
+  .tree { font-size: 13px; }
+  .tree-node { margin: 3px 0; }
+  .tree-node .row {
+    display: flex; align-items: flex-start; gap: 8px; padding: 4px 8px;
+    border-radius: 6px; cursor: default;
+  }
+  .tree-node .row:hover { background: var(--surface2); }
+  .tree-node .row.clickable { cursor: pointer; }
+  .tree-node .children { margin-left: 22px; border-left: 1px solid var(--border); padding-left: 12px; }
+  .tree-node .toggle { width: 14px; flex-shrink: 0; font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .icon { flex-shrink: 0; }
+  .label { flex: 1; }
+  .label .kind { font-weight: 600; margin-right: 4px; }
+  .label .kind.or  { color: #818cf8; }
+  .label .kind.and { color: #38bdf8; }
+  .label .kind.not { color: var(--yellow); }
+  .label .kind.near { color: #a78bfa; }
+  .label .detail { color: var(--muted); }
+  .label .hit { color: var(--green); }
+  .label .miss { color: var(--red); }
+
+  .collapsed > .children { display: none; }
+
+  /* Summary bar */
+  .summary-bar { display: flex; gap: 12px; margin-bottom: 16px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; flex: 1; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 700; }
+  .stat-lab { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+  .stat-val.green { color: var(--green); }
+  .stat-val.red   { color: var(--red); }
+
+  /* Status */
+  .status { font-size: 12px; color: var(--muted); margin-top: 6px; min-height: 18px; }
+  .status.loading { color: var(--accent); }
+  .status.error   { color: var(--red); }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+  .note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  /* Collapse large blocks */
+  .collapse-toggle {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+    color: var(--accent); cursor: pointer; padding: 3px 8px; border-radius: 4px;
+    border: 1px solid rgba(79,110,247,.3); margin: 4px 0; background: rgba(79,110,247,.08);
+  }
+  .collapse-toggle:hover { background: rgba(79,110,247,.15); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔍 Pulsar Boolean Checker</h1>
+  <p>Test whether an article or post would be ingested by a Pulsar search — and see exactly why or why not.</p>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: Inputs -->
+  <div class="panel panel-left">
+
+    <div class="section">
+      <h2>Boolean String</h2>
+      <label>Paste the boolean search string from Pulsar</label>
+      <textarea id="boolInput" rows="8" placeholder='("Jenner & Block" OR "Jenner and Block") AND NOT (jobs OR hiring OR obituary)'></textarea>
+    </div>
+
+    <div class="section">
+      <h2>Content to Test</h2>
+      <div class="tabs">
+        <div class="tab active" data-tab="paste">Paste Text</div>
+        <div class="tab" data-tab="url">Enter URL</div>
+      </div>
+
+      <div class="tab-content active" id="tab-paste">
+        <label>Paste the article or post text</label>
+        <textarea id="pasteInput" rows="8" placeholder="Paste full article text, tweet, LinkedIn post…"></textarea>
+      </div>
+
+      <div class="tab-content" id="tab-url">
+        <label>Article or post URL</label>
+        <div class="input-row">
+          <input type="text" id="urlInput" placeholder="https://www.example.com/article…"/>
+          <button class="btn-fetch" onclick="fetchURL()">Fetch</button>
+        </div>
+        <div class="status" id="fetchStatus"></div>
+        <textarea id="fetchedText" rows="6" placeholder="Fetched content will appear here…" style="margin-top:10px"></textarea>
+      </div>
+    </div>
+
+    <button class="btn-check" onclick="runCheck()">▶  Check</button>
+    <p class="note">Large OR/AND blocks (exclusion lists etc.) are collapsed by default — click to expand.</p>
+  </div>
+
+  <!-- RIGHT: Results -->
+  <div class="panel panel-right">
+    <h2>Result</h2>
+
+    <div class="verdict empty" id="verdict">
+      <div class="verdict-icon">🔍</div>
+      <div class="verdict-title">Waiting for input</div>
+      <div class="verdict-sub">Fill in the boolean and content on the left, then click Check.</div>
+    </div>
+
+    <div id="summaryBar" style="display:none" class="summary-bar">
+      <div class="stat"><div class="stat-val green" id="statMatch">—</div><div class="stat-lab">Matched</div></div>
+      <div class="stat"><div class="stat-val red"   id="statFail">—</div><div class="stat-lab">Failed</div></div>
+      <div class="stat"><div class="stat-val"       id="statTotal">—</div><div class="stat-lab">Total clauses</div></div>
+    </div>
+
+    <hr class="divider" id="treeDivider" style="display:none"/>
+    <div class="tree" id="treeRoot"></div>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// TOKENISER
+// ─────────────────────────────────────────────────────────────────────────────
+const TK = { OR:'OR', AND:'AND', NOT:'NOT', NEAR:'NEAR', LP:'LP', RP:'RP', PHRASE:'PHRASE', WORD:'WORD', FIELD:'FIELD', EOF:'EOF' };
+
+class Token { constructor(k,v='',n=0){this.kind=k;this.val=v;this.nearN=n;} }
+
+function tokenise(q) {
+  const tokens=[]; let i=0, len=q.length;
+  while(i<len){
+    const c=q[i];
+    if(/\s/.test(c)){i++;continue;}
+    if(c==='('){tokens.push(new Token(TK.LP,'('));i++;continue;}
+    if(c===')'){tokens.push(new Token(TK.RP,')'));i++;continue;}
+    if(c==='"'){
+      let j=q.indexOf('"',i+1); if(j===-1)j=len;
+      tokens.push(new Token(TK.PHRASE,q.slice(i+1,j))); i=j+1; continue;
+    }
+    if(c==='-'){tokens.push(new Token(TK.NOT,'-'));i++;continue;}
+    let j=i;
+    while(j<len&&!/\s/.test(q[j])&&!'()"'.includes(q[j]))j++;
+    const word=q.slice(i,j), upper=word.toUpperCase().replace(/\($/,'');
+    if(upper==='AND') tokens.push(new Token(TK.AND,'AND'));
+    else if(upper==='OR') tokens.push(new Token(TK.OR,'OR'));
+    else if(upper==='NOT'){
+      tokens.push(new Token(TK.NOT,'NOT'));
+      if(word.endsWith('('))tokens.push(new Token(TK.LP,'('));
+    }
+    else if(/^NEAR\/\d+$/.test(upper)) tokens.push(new Token(TK.NEAR,word,parseInt(upper.slice(5))));
+    else if(word.includes(':')&&!word.startsWith(':')&&!word.endsWith(':')) tokens.push(new Token(TK.FIELD,word));
+    else tokens.push(new Token(TK.WORD,word));
+    i=j;
+  }
+  tokens.push(new Token(TK.EOF,''));
+  return tokens;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PARSER
+// ─────────────────────────────────────────────────────────────────────────────
+class ASTNode{
+  constructor(kind,opts={}){
+    this.kind=kind; this.children=opts.children||[]; this.value=opts.value||'';
+    this.nearN=opts.nearN||0; this.fieldName=opts.fieldName||''; this.fieldVal=opts.fieldVal||'';
+  }
+}
+
+class Parser{
+  constructor(t){this.t=t;this.p=0;}
+  peek(){return this.t[this.p];}
+  eat(k){const t=this.t[this.p]; if(k&&t.kind!==k)throw new Error(`Expected ${k} got ${t.kind}`); this.p++; return t;}
+  parse(){return this.or();}
+  or(){
+    let l=this.and();
+    while(this.peek().kind===TK.OR){this.eat(TK.OR);const r=this.and();
+      if(l.kind==='or')l.children.push(r); else l=new ASTNode('or',{children:[l,r]});}
+    return l;
+  }
+  and(){
+    let l=this.not();
+    while(![TK.OR,TK.RP,TK.EOF].includes(this.peek().kind)){
+      if(this.peek().kind===TK.AND)this.eat(TK.AND);
+      else if([TK.NOT,TK.LP,TK.PHRASE,TK.WORD,TK.FIELD].includes(this.peek().kind)){}
+      else break;
+      const r=this.not();
+      if(l.kind==='and')l.children.push(r); else l=new ASTNode('and',{children:[l,r]});
+    }
+    return l;
+  }
+  not(){
+    if(this.peek().kind===TK.NOT){this.eat(TK.NOT);return new ASTNode('not',{children:[this.primary()]});}
+    return this.near();
+  }
+  near(){
+    const l=this.primary();
+    if(this.peek().kind===TK.NEAR){const t=this.eat(TK.NEAR);return new ASTNode('near',{children:[l,this.primary()],nearN:t.nearN});}
+    return l;
+  }
+  primary(){
+    const t=this.peek();
+    if(t.kind===TK.LP){this.eat(TK.LP);const n=this.or();if(this.peek().kind===TK.RP)this.eat(TK.RP);return n;}
+    if(t.kind===TK.PHRASE){this.eat();return new ASTNode('phrase',{value:t.val});}
+    if(t.kind===TK.FIELD){this.eat();const p=t.val.split(':',2);return new ASTNode('field',{fieldName:p[0],fieldVal:p[1]||''});}
+    if(t.kind===TK.WORD){this.eat();return new ASTNode('word',{value:t.val});}
+    if(t.kind===TK.NOT){this.eat();return new ASTNode('not',{children:[this.primary()]});}
+    this.eat(); return new ASTNode('word',{value:t.val});
+  }
+}
+
+function parseBoolean(q){return new Parser(tokenise(q)).parse();}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EVALUATOR
+// ─────────────────────────────────────────────────────────────────────────────
+function surface(n){return n.value||(n.children||[]).map(surface).join(' ');}
+
+function evaluate(node, content, url=''){
+  if(node.kind==='or'){
+    const kids=node.children.map(c=>evaluate(c,content,url));
+    const matched=kids.some(r=>r.matched);
+    return{matched,label:'OR',detail:`${kids.filter(r=>r.matched).length}/${kids.length} clauses matched`,children:kids};
+  }
+  if(node.kind==='and'){
+    const kids=node.children.map(c=>evaluate(c,content,url));
+    const matched=kids.every(r=>r.matched);
+    const nf=kids.filter(r=>!r.matched).length;
+    return{matched,label:'AND',detail:matched?`all ${kids.length} matched`:`${nf} clause(s) failed`,children:kids};
+  }
+  if(node.kind==='not'){
+    const kid=evaluate(node.children[0],content,url);
+    return{matched:!kid.matched,label:'NOT',detail:kid.matched?'exclusion term found → fails':'exclusion term absent → passes',children:[kid]};
+  }
+  if(node.kind==='near'){
+    const t1=surface(node.children[0]).toLowerCase(), t2=surface(node.children[1]).toLowerCase();
+    const words=(content.toLowerCase().match(/\w+/g)||[]);
+    const p1=words.flatMap((w,i)=>w.includes(t1)?[i]:[]);
+    const p2=words.flatMap((w,i)=>w.includes(t2)?[i]:[]);
+    const matched=p1.some(a=>p2.some(b=>Math.abs(a-b)<=node.nearN));
+    return{matched,label:`NEAR/${node.nearN}`,detail:`"${t1}" and "${t2}" — ${matched?'within range':'not within range'}`,children:[]};
+  }
+  if(node.kind==='phrase'){
+    const matched=content.toLowerCase().includes(node.value.toLowerCase());
+    return{matched,label:'phrase',detail:`"${node.value}"`,children:[]};
+  }
+  if(node.kind==='word'){
+    const w=node.value.replace(/['\.,;:!?*]+$/,'');
+    const matched=w?new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(content):false;
+    return{matched,label:'word',detail:`"${node.value}"`,children:[]};
+  }
+  if(node.kind==='field'){
+    const fn=node.fieldName.toLowerCase(), fv=node.fieldVal.replace(/^"|"$/g,'').toLowerCase();
+    if(fn==='url'){const m=url.toLowerCase().includes(fv);return{matched:m,label:'url:',detail:`"${fv}" — ${m?'found':'not found'}`,children:[]};}
+    return{matched:true,label:node.fieldName+':',detail:`${node.fieldVal} (skipped)`,children:[]};
+  }
+  return{matched:true,label:'?',detail:node.kind,children:[]};
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATS
+// ─────────────────────────────────────────────────────────────────────────────
+function countLeaves(r){
+  if(!r.children||r.children.length===0)return{total:1,matched:r.matched?1:0};
+  return r.children.reduce((acc,c)=>{const s=countLeaves(c);return{total:acc.total+s.total,matched:acc.matched+s.matched};},{total:0,matched:0});
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDERER
+// ─────────────────────────────────────────────────────────────────────────────
+const COLLAPSE_THRESHOLD = 8;
+
+function renderTree(result, container, depth=0){
+  const isLeaf = !result.children || result.children.length===0;
+  const isComposite = ['or','and','not'].includes(result.label?.toLowerCase?.())||result.children?.length>0;
+  const icon = result.matched ? '✅' : '❌';
+  const kindClass = (result.label||'').toLowerCase().replace(/[^a-z]/g,'');
+
+  const nodeEl = document.createElement('div');
+  nodeEl.className = 'tree-node';
+
+  const row = document.createElement('div');
+  row.className = 'row';
+
+  // Toggle arrow for composite nodes
+  const toggleEl = document.createElement('span');
+  toggleEl.className = 'toggle';
+
+  const iconEl = document.createElement('span');
+  iconEl.className = 'icon';
+  iconEl.textContent = icon;
+
+  const labelEl = document.createElement('span');
+  labelEl.className = 'label';
+
+  if(isLeaf){
+    labelEl.innerHTML = `<span class="kind ${kindClass}">${result.label}</span> <span class="${result.matched?'hit':'miss'}">${result.detail||''}</span>`;
+  } else {
+    labelEl.innerHTML = `<span class="kind ${kindClass}">${result.label}</span> <span class="detail">${result.detail||''}</span>`;
+  }
+
+  row.appendChild(toggleEl);
+  row.appendChild(iconEl);
+  row.appendChild(labelEl);
+  nodeEl.appendChild(row);
+
+  if(result.children && result.children.length > 0){
+    const childrenEl = document.createElement('div');
+    childrenEl.className = 'children';
+
+    // Should we collapse this block?
+    const shouldCollapse = result.children.length > COLLAPSE_THRESHOLD && depth > 0;
+
+    if(shouldCollapse){
+      const nMatch = result.children.filter(r=>r.matched).length;
+      const nFail  = result.children.length - nMatch;
+      const toggle = document.createElement('span');
+      toggle.className='collapse-toggle';
+      toggle.innerHTML = `▶ Show all ${result.children.length} branches (${nMatch} matched, ${nFail} failed)`;
+      let expanded = false;
+      toggle.onclick = ()=>{
+        expanded=!expanded;
+        childrenEl.style.display = expanded ? '' : 'none';
+        toggle.innerHTML = expanded
+          ? `▼ Hide branches`
+          : `▶ Show all ${result.children.length} branches (${nMatch} matched, ${nFail} failed)`;
+      };
+      nodeEl.appendChild(toggle);
+      childrenEl.style.display = 'none';
+    } else {
+      toggleEl.textContent = '▾';
+      row.className += ' clickable';
+      row.onclick = ()=>{
+        nodeEl.classList.toggle('collapsed');
+        toggleEl.textContent = nodeEl.classList.contains('collapsed') ? '▸' : '▾';
+      };
+    }
+
+    result.children.forEach(child => renderTree(child, childrenEl, depth+1));
+    nodeEl.appendChild(childrenEl);
+  }
+
+  container.appendChild(nodeEl);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAB SWITCHING
+// ─────────────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// URL FETCHER
+// ─────────────────────────────────────────────────────────────────────────────
+async function fetchURL(){
+  const url = document.getElementById('urlInput').value.trim();
+  if(!url){return;}
+  const status = document.getElementById('fetchStatus');
+  const output = document.getElementById('fetchedText');
+  status.className='status loading'; status.textContent='Fetching…';
+  output.value='';
+  try{
+    const res = await fetch('/.netlify/functions/fetch-url',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url})
+    });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if(data.error) throw new Error(data.error);
+    output.value = data.text;
+    status.className='status'; status.textContent=`✓ Fetched ${data.text.length.toLocaleString()} characters`;
+  }catch(e){
+    status.className='status error'; status.textContent=`Error: ${e.message}`;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN CHECK
+// ─────────────────────────────────────────────────────────────────────────────
+function runCheck(){
+  const boolStr = document.getElementById('boolInput').value.trim();
+  const activeTab = document.querySelector('.tab.active').dataset.tab;
+  const content = activeTab==='paste'
+    ? document.getElementById('pasteInput').value.trim()
+    : document.getElementById('fetchedText').value.trim();
+  const url = activeTab==='url' ? document.getElementById('urlInput').value.trim() : '';
+
+  const verdict     = document.getElementById('verdict');
+  const treeRoot    = document.getElementById('treeRoot');
+  const summaryBar  = document.getElementById('summaryBar');
+  const treeDivider = document.getElementById('treeDivider');
+
+  treeRoot.innerHTML=''; summaryBar.style.display='none'; treeDivider.style.display='none';
+
+  if(!boolStr){
+    verdict.className='verdict empty';
+    verdict.innerHTML='<div class="verdict-icon">⚠️</div><div class="verdict-title">No boolean string</div><div class="verdict-sub">Paste a boolean on the left.</div>';
+    return;
+  }
+  if(!content){
+    verdict.className='verdict empty';
+    verdict.innerHTML='<div class="verdict-icon">⚠️</div><div class="verdict-title">No content</div><div class="verdict-sub">Paste text or fetch a URL on the left.</div>';
+    return;
+  }
+
+  let ast, result;
+  try{
+    ast = parseBoolean(boolStr);
+    result = evaluate(ast, content, url);
+  }catch(e){
+    verdict.className='verdict empty';
+    verdict.innerHTML=`<div class="verdict-icon">🚫</div><div class="verdict-title">Parse error</div><div class="verdict-sub">${e.message}</div>`;
+    return;
+  }
+
+  // Verdict
+  if(result.matched){
+    verdict.className='verdict match';
+    verdict.innerHTML='<div class="verdict-icon">✅</div><div class="verdict-title">WOULD BE INGESTED</div><div class="verdict-sub">This content matches the boolean and would be captured by this search.</div>';
+  } else {
+    verdict.className='verdict nomatch';
+    verdict.innerHTML='<div class="verdict-icon">❌</div><div class="verdict-title">WOULD NOT BE INGESTED</div><div class="verdict-sub">This content does not match the boolean and would be excluded from this search.</div>';
+  }
+
+  // Stats
+  const{total,matched}=countLeaves(result);
+  document.getElementById('statMatch').textContent=matched;
+  document.getElementById('statFail').textContent=total-matched;
+  document.getElementById('statTotal').textContent=total;
+  summaryBar.style.display='flex';
+  treeDivider.style.display='';
+
+  // Tree
+  renderTree(result, treeRoot);
+}
+
+// Allow Enter on URL input to trigger fetch
+document.getElementById('urlInput').addEventListener('keydown', e=>{if(e.key==='Enter')fetchURL();});
+</script>
+</body>
+</html>
