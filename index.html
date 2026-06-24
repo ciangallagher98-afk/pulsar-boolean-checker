@@ -8,157 +8,165 @@
   :root {
     --bg:#0f1117; --surface:#1a1d27; --surface2:#22263a; --border:#2e3250;
     --accent:#4f6ef7; --green:#22c55e; --red:#ef4444; --yellow:#f59e0b;
-    --purple:#a78bfa; --text:#e2e8f0; --muted:#8892b0; --r:10px;
+    --purple:#a78bfa; --text:#e2e8f0; --muted:#8892b0; --r:8px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
 
-  header{padding:20px 28px 14px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:16px;}
-  header h1{font-size:20px;font-weight:700;}
-  header p{color:var(--muted);font-size:13px;}
+  header{padding:16px 24px 12px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:14px;}
+  header h1{font-size:18px;font-weight:700;}
+  header p{color:var(--muted);font-size:12.5px;}
 
-  .layout{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 57px);}
-  .panel{padding:20px 24px;overflow-y:auto;}
-  .panel-left{border-right:1px solid var(--border);}
+  .layout{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 53px);}
+  .panel{padding:18px 22px;overflow-y:auto;}
+  .panel-left{border-right:1px solid var(--border);display:flex;flex-direction:column;gap:14px;}
 
-  h2{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;}
+  h2{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:6px;}
 
-  .section{margin-bottom:20px;}
-
-  label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;}
   textarea,input[type=text]{
     width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-    color:var(--text);font-size:12.5px;padding:9px 11px;resize:vertical;outline:none;
+    color:var(--text);font-size:12.5px;padding:8px 11px;resize:vertical;outline:none;
     transition:border-color .15s;font-family:'Menlo','Fira Code',monospace;
   }
   textarea:focus,input:focus{border-color:var(--accent);}
 
-  .tabs{display:flex;gap:4px;margin-bottom:10px;}
-  .tab{padding:5px 13px;border-radius:6px;font-size:12px;cursor:pointer;background:transparent;border:1px solid var(--border);color:var(--muted);transition:all .15s;}
-  .tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-  .tab-content{display:none;}
-  .tab-content.active{display:block;}
+  /* URL row */
+  .url-row{display:flex;gap:6px;align-items:center;}
+  .url-row input{flex:1;resize:none;}
+  .btn-fetch{
+    background:var(--surface2);color:var(--text);border:1px solid var(--border);
+    border-radius:var(--r);font-size:12px;font-weight:600;padding:7px 13px;
+    cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;
+  }
+  .btn-fetch:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-fetch.loading{opacity:.6;cursor:default;}
 
-  .input-row{display:flex;gap:8px;}
-  .input-row input{flex:1;}
+  .fetch-status{font-size:11.5px;color:var(--muted);margin-top:4px;min-height:15px;}
+  .fetch-status.ok{color:var(--green);}
+  .fetch-status.err{color:var(--red);}
+  .fetch-status.warn{color:var(--yellow);}
 
-  button{padding:8px 16px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
-  .btn-sm{background:var(--surface2);color:var(--text);border:1px solid var(--border);font-size:12px;padding:6px 12px;}
-  .btn-sm:hover{border-color:var(--accent);color:var(--accent);}
-  .btn-check{width:100%;padding:11px;background:var(--accent);color:#fff;font-size:14px;margin-top:6px;border-radius:var(--r);}
-  .btn-check:hover{opacity:.9;}
+  .or-divider{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
+  .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border);}
 
-  .status{font-size:12px;color:var(--muted);margin-top:5px;min-height:16px;}
-  .status.loading{color:var(--accent);}
-  .status.error{color:var(--red);}
-  .status.warn{color:var(--yellow);}
+  .btn-check{
+    width:100%;padding:10px;background:var(--accent);color:#fff;
+    font-size:13.5px;font-weight:700;cursor:pointer;border:none;border-radius:var(--r);
+    transition:opacity .15s;
+  }
+  .btn-check:hover{opacity:.88;}
+
+  /* ── Right panel ── */
+
+  /* Source label strip */
+  .source-label{
+    font-size:11px;color:var(--muted);background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--r);
+    padding:6px 11px;margin-bottom:10px;word-break:break-all;line-height:1.4;
+  }
+  .source-label strong{color:var(--text);}
 
   /* Verdict */
-  .verdict{border-radius:var(--r);padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;}
-  .verdict.match  {background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);}
-  .verdict.nomatch{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);}
+  .verdict{border-radius:var(--r);padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
+  .verdict.match  {background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);}
+  .verdict.nomatch{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);}
   .verdict.idle   {background:var(--surface);border:1px solid var(--border);}
-  .verdict-icon{font-size:28px;flex-shrink:0;}
-  .verdict-title{font-size:17px;font-weight:700;}
+  .verdict-icon{font-size:24px;flex-shrink:0;line-height:1;}
+  .verdict-title{font-size:15px;font-weight:700;line-height:1.3;}
   .verdict.match   .verdict-title{color:var(--green);}
   .verdict.nomatch .verdict-title{color:var(--red);}
-  .verdict-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .verdict-url{font-size:11.5px;color:var(--muted);margin-top:3px;word-break:break-all;}
 
-  /* Why summary */
-  .why-list{margin-bottom:16px;display:flex;flex-direction:column;gap:6px;}
-  .why-item{display:flex;gap:10px;padding:10px 12px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);}
-  .why-item.ok  {border-color:rgba(34,197,94,.3);}
-  .why-item.bad {border-color:rgba(239,68,68,.3);}
-  .why-item.skip{border-color:var(--border);opacity:.7;}
-  .why-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
-  .why-text strong{display:block;font-size:13px;font-weight:600;}
-  .why-text span{font-size:12px;color:var(--muted);}
+  /* Why list */
+  .why-list{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+  .why-item{display:flex;gap:9px;padding:9px 11px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);}
+  .why-item.ok {border-color:rgba(34,197,94,.28);}
+  .why-item.bad{border-color:rgba(239,68,68,.28);}
+  .why-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+  .why-text strong{display:block;font-size:12.5px;font-weight:600;line-height:1.3;}
+  .why-text span{font-size:11.5px;color:var(--muted);}
 
   /* Stats */
-  .stats{display:flex;gap:8px;margin-bottom:14px;}
-  .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;flex:1;text-align:center;}
-  .stat-val{font-size:20px;font-weight:700;}
-  .stat-lab{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+  .stats{display:flex;gap:6px;margin-bottom:10px;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;flex:1;text-align:center;}
+  .stat-val{font-size:18px;font-weight:700;}
+  .stat-lab{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
   .stat-val.g{color:var(--green);} .stat-val.r{color:var(--red);}
 
-  hr.div{border:none;border-top:1px solid var(--border);margin:12px 0;}
+  hr.div{border:none;border-top:1px solid var(--border);margin:10px 0;}
 
   /* Tree */
-  .tree{font-size:12.5px;}
+  .tree{font-size:12px;}
   .tree-node{margin:2px 0;}
-  .row{display:flex;align-items:flex-start;gap:7px;padding:3px 7px;border-radius:5px;cursor:default;}
+  .row{display:flex;align-items:flex-start;gap:6px;padding:2px 6px;border-radius:4px;cursor:default;}
   .row:hover{background:var(--surface2);}
   .row.click{cursor:pointer;}
-  .tog{width:13px;flex-shrink:0;font-size:10px;color:var(--muted);margin-top:2px;}
-  .ic{flex-shrink:0;}
-  .lbl{flex:1;} .lbl .kd{font-weight:700;margin-right:4px;}
+  .tog{width:12px;flex-shrink:0;font-size:9px;color:var(--muted);margin-top:3px;}
+  .ic{flex-shrink:0;font-size:12px;}
+  .lbl{flex:1;} .lbl .kd{font-weight:700;margin-right:3px;}
   .kd.or{color:#818cf8;} .kd.and{color:#38bdf8;} .kd.not_{color:var(--yellow);}
   .kd.near{color:var(--purple);} .kd.skip{color:var(--muted);}
   .lbl .dt{color:var(--muted);}
   .lbl .hit{color:var(--green);font-weight:600;}
   .lbl .miss{color:var(--red);}
-  .children{margin-left:20px;border-left:1px solid var(--border);padding-left:10px;}
+  .children{margin-left:18px;border-left:1px solid var(--border);padding-left:8px;}
   .collapsed>.children{display:none;}
 
   .expand-btn{
-    display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--accent);
-    cursor:pointer;padding:3px 8px;border-radius:4px;margin:3px 0;
-    border:1px solid rgba(79,110,247,.25);background:rgba(79,110,247,.07);
+    display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--accent);
+    cursor:pointer;padding:2px 7px;border-radius:4px;margin:2px 0;
+    border:1px solid rgba(79,110,247,.22);background:rgba(79,110,247,.06);
   }
-  .expand-btn:hover{background:rgba(79,110,247,.15);}
+  .expand-btn:hover{background:rgba(79,110,247,.14);}
 
-  .detail-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;margin-top:6px;display:inline-block;}
-  .detail-toggle:hover{color:var(--text);}
+  .tree-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;display:inline-block;}
+  .tree-toggle:hover{color:var(--text);}
   #fullTree{display:none;}
-  .note{font-size:11px;color:var(--muted);margin-top:5px;}
 </style>
 </head>
 <body>
 
 <header>
   <h1>🔍 Pulsar Boolean Checker</h1>
-  <p>Test whether an article or post would be ingested by a Pulsar search — and see exactly why.</p>
+  <p>Test whether an article or post would be ingested by a Pulsar search.</p>
 </header>
 
 <div class="layout">
+
+<!-- ── LEFT: inputs ── -->
 <div class="panel panel-left">
 
-  <div class="section">
+  <div>
     <h2>Boolean String</h2>
-    <textarea id="boolInput" rows="9" placeholder='("Humanitarian aid" OR "International aid" OR ODA) AND NOT (jobs OR hiring) AND NOT RETWEET'></textarea>
+    <textarea id="boolInput" rows="8" placeholder='("Humanitarian aid" OR "International aid" OR ODA) AND NOT (jobs OR hiring) AND NOT RETWEET'></textarea>
   </div>
 
-  <div class="section">
-    <h2>Content to Test</h2>
-    <div class="tabs">
-      <div class="tab active" data-tab="paste">Paste Text</div>
-      <div class="tab" data-tab="url">Enter URL</div>
+  <div>
+    <h2>Article / Post URL</h2>
+    <div class="url-row">
+      <input type="text" id="urlInput" placeholder="https://…  (press Enter or click Fetch)"/>
+      <button class="btn-fetch" id="fetchBtn" onclick="fetchURL()">Fetch</button>
     </div>
+    <div class="fetch-status" id="fetchStatus"></div>
+  </div>
 
-    <div class="tab-content active" id="tab-paste">
-      <textarea id="pasteInput" rows="9" placeholder="Paste full article text, tweet body, LinkedIn post…"></textarea>
-    </div>
+  <div class="or-divider">or paste text directly</div>
 
-    <div class="tab-content" id="tab-url">
-      <div class="input-row">
-        <input type="text" id="urlInput" placeholder="https://…"/>
-        <button class="btn-sm" onclick="fetchURL()">Fetch</button>
-      </div>
-      <div class="status" id="fetchStatus"></div>
-      <textarea id="fetchedText" rows="7" placeholder="Fetched content appears here — or paste directly if the site blocks scraping." style="margin-top:8px"></textarea>
-      <p class="note">⚠ JS-rendered sites (Reuters, Bloomberg, FT) can't be scraped — paste the text manually for those.</p>
-    </div>
+  <div style="flex:1">
+    <textarea id="contentInput" rows="10" style="height:100%;min-height:120px" placeholder="Paste full article text, tweet, LinkedIn post… Content fetched above will appear here automatically."></textarea>
   </div>
 
   <button class="btn-check" onclick="runCheck()">▶  Check</button>
+
 </div>
 
+<!-- ── RIGHT: results ── -->
 <div class="panel panel-right">
   <h2>Result</h2>
 
   <div class="verdict idle" id="verdict">
     <div class="verdict-icon">🔍</div>
-    <div><div class="verdict-title">Waiting</div><div class="verdict-sub">Paste a boolean and content, then click Check.</div></div>
+    <div><div class="verdict-title">Waiting</div><div class="verdict-url">Enter a boolean and content, then click Check.</div></div>
   </div>
 
   <div id="whyList" class="why-list" style="display:none"></div>
@@ -170,35 +178,32 @@
   </div>
 
   <hr class="div" id="treeDivider" style="display:none"/>
-  <span class="detail-toggle" id="treeToggle" style="display:none" onclick="toggleTree()">▶ Show full clause breakdown</span>
+  <span class="tree-toggle" id="treeToggle" style="display:none" onclick="toggleTree()">▶ Show full clause breakdown</span>
   <div class="tree" id="fullTree"></div>
 </div>
-</div>
+
+</div><!-- .layout -->
 
 <script>
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
-// Pulsar meta-operators that filter on platform/metadata, not text content.
-// We skip these rather than trying to match them against article text.
 const PULSAR_META = new Set([
   'location','lang','language','retweet','reply','gb','us','uk','en','fr','de',
+  'au','ca','nz','ie','za','sg','in','jp','kr','br','mx','es','it','pl','nl',
 ]);
 
-// Platform-scope words: when a WORD matching these is followed by a group (...),
-// it means "search only on this platform". We treat the inner expression as
-// platform-scoped and skip it with a note.
 const PLATFORM_WORDS = new Set([
   'twitch','pinterest','instagram','facebook','reddit','linkedin','youtube',
-  'tiktok','tumblr','blog','twitter','x','weibo','discord','telegram',
+  'tiktok','tumblr','blog','twitter','x','weibo','discord','telegram','snapchat',
 ]);
 
 // ─── TOKENISER ────────────────────────────────────────────────────────────────
 
-const TK = {OR:'OR',AND:'AND',NOT:'NOT',NEAR:'NEAR',LP:'LP',RP:'RP',PHRASE:'PHRASE',WORD:'WORD',FIELD:'FIELD',EOF:'EOF'};
+const TK={OR:'OR',AND:'AND',NOT:'NOT',NEAR:'NEAR',LP:'LP',RP:'RP',PHRASE:'PHRASE',WORD:'WORD',FIELD:'FIELD',EOF:'EOF'};
 class Tok{constructor(k,v='',n=0){this.kind=k;this.val=v;this.nearN=n;}}
 
 function tokenise(q){
-  const t=[]; let i=0,n=q.length;
+  const t=[];let i=0,n=q.length;
   while(i<n){
     const c=q[i];
     if(/\s/.test(c)){i++;continue;}
@@ -206,7 +211,7 @@ function tokenise(q){
     if(c===')'){t.push(new Tok(TK.RP,')'));i++;continue;}
     if(c==='"'){let j=q.indexOf('"',i+1);if(j===-1)j=n;t.push(new Tok(TK.PHRASE,q.slice(i+1,j)));i=j+1;continue;}
     if(c==='-'){t.push(new Tok(TK.NOT,'-'));i++;continue;}
-    let j=i; while(j<n&&!/\s/.test(q[j])&&!'()"'.includes(q[j]))j++;
+    let j=i;while(j<n&&!/\s/.test(q[j])&&!'()"'.includes(q[j]))j++;
     const w=q.slice(i,j),up=w.toUpperCase().replace(/\($/,'');
     if(up==='AND')t.push(new Tok(TK.AND,'AND'));
     else if(up==='OR')t.push(new Tok(TK.OR,'OR'));
@@ -264,7 +269,6 @@ class Parser{
     if(t.kind===TK.FIELD){this.eat();const p=t.val.split(':',2);return new N('field',{fn:p[0],fv:p[1]||''});}
     if(t.kind===TK.WORD){
       this.eat();
-      // If a platform word is followed by '(' treat the whole group as platform-scoped
       if(PLATFORM_WORDS.has(t.val.toLowerCase())&&this.peek().kind===TK.LP){
         this.eat(TK.LP);const inner=this.or();if(this.peek().kind===TK.RP)this.eat();
         return new N('platform',{v:t.val,c:[inner]});
@@ -284,28 +288,24 @@ function surface(n){return n.value||(n.children||[]).map(surface).join(' ');}
 
 function evaluate(node,content,url=''){
   switch(node.kind){
-
     case 'or':{
       const kids=node.children.map(c=>evaluate(c,content,url));
       const matched=kids.some(r=>r.matched);
       const nm=kids.filter(r=>r.matched).length;
       return{matched,label:'OR',detail:`${nm}/${kids.length} clauses matched`,children:kids,nodeKind:'or'};
     }
-
     case 'and':{
       const kids=node.children.map(c=>evaluate(c,content,url));
       const matched=kids.every(r=>r.matched);
       const nf=kids.filter(r=>!r.matched).length;
       return{matched,label:'AND',detail:matched?`all ${kids.length} matched`:`${nf} clause(s) failed`,children:kids,nodeKind:'and'};
     }
-
     case 'not':{
       const kid=evaluate(node.children[0],content,url);
       return{matched:!kid.matched,label:'NOT',
-        detail:kid.matched?'exclusion term found → fails':'exclusion term absent → passes',
+        detail:kid.matched?'exclusion term found → fails':'exclusion absent → passes',
         children:[kid],nodeKind:'not'};
     }
-
     case 'near':{
       const t1=surface(node.children[0]).toLowerCase(),t2=surface(node.children[1]).toLowerCase();
       const words=(content.toLowerCase().match(/\w+/g)||[]);
@@ -314,100 +314,80 @@ function evaluate(node,content,url=''){
       const matched=p1.some(a=>p2.some(b=>Math.abs(a-b)<=node.nearN));
       return{matched,label:`NEAR/${node.nearN}`,detail:`"${t1}" & "${t2}" — ${matched?'within range':'not within range'}`,children:[],nodeKind:'near'};
     }
-
     case 'phrase':{
       const matched=content.toLowerCase().includes(node.value.toLowerCase());
       return{matched,label:'phrase',detail:`"${node.value}"`,children:[],nodeKind:'phrase'};
     }
-
     case 'word':{
       const w=node.value.replace(/['\.,;:!?*]+$/,'');
       const wl=w.toLowerCase();
-      // Skip Pulsar meta operators
       if(PULSAR_META.has(wl)){
         return{matched:true,label:'skip',detail:`${node.value} (Pulsar filter — skipped)`,children:[],nodeKind:'skip'};
       }
       const matched=w?new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(content):false;
       return{matched,label:'word',detail:`"${node.value}"`,children:[],nodeKind:'word'};
     }
-
     case 'field':{
       const fn=node.fieldName.toLowerCase(),fv=node.fieldVal.replace(/^"|"$/g,'').toLowerCase();
-      if(fn==='url'){const m=url.toLowerCase().includes(fv);return{matched:m,label:'url:',detail:`"${fv}" — ${m?'found':'not found'}`,children:[],nodeKind:'field'};}
-      // language_codes, location, lang etc — skip
+      if(fn==='url'){const m=url.toLowerCase().includes(fv);return{matched:m,label:'url:',detail:`"${fv}" — ${m?'found in URL':'not found in URL'}`,children:[],nodeKind:'field'};}
       return{matched:true,label:'skip',detail:`${node.fieldName}:${node.fieldVal} (Pulsar filter — skipped)`,children:[],nodeKind:'skip'};
     }
-
-    case 'platform':{
-      // Platform-scoped clause (e.g. TWITCH (...)) — skipped in text evaluation
+    case 'platform':
       return{matched:true,label:'skip',detail:`${node.value} (...) — platform-scoped, skipped for text evaluation`,children:[],nodeKind:'skip'};
-    }
-
     default:
       return{matched:true,label:'skip',detail:`(${node.kind})`,children:[],nodeKind:'skip'};
   }
 }
 
-// ─── PLAIN-ENGLISH SUMMARY ────────────────────────────────────────────────────
+// ─── SUMMARY ──────────────────────────────────────────────────────────────────
 
-function firstMatchedLeaf(result){
-  if(!result.children||!result.children.length)return result.matched?result.detail:null;
-  for(const c of result.children){const f=firstMatchedLeaf(c);if(f)return f;}
+function firstMatchedLeaf(r){
+  if(!r.children||!r.children.length)return r.matched?r.detail:null;
+  for(const c of r.children){const f=firstMatchedLeaf(c);if(f)return f;}
   return null;
 }
 
-function sampleTerms(result,n=4,matched=false){
+function sampleTerms(r,max,wantMatched){
   const out=[];
-  function walk(r){
-    if(out.length>=n)return;
-    if(!r.children||!r.children.length){if(r.matched===matched&&r.detail&&r.nodeKind!=='skip')out.push(r.detail);return;}
+  (function walk(r){
+    if(out.length>=max)return;
+    if(!r.children||!r.children.length){if(r.matched===wantMatched&&r.detail&&r.nodeKind!=='skip')out.push(r.detail);return;}
     r.children.forEach(walk);
-  }
-  walk(result);return out;
+  })(r);
+  return out;
 }
 
 function generateSummary(result){
   const items=[];
-  function walk(r,depth){
-    if(depth>2)return;
-    if(r.nodeKind==='skip')return; // never surface skipped nodes
-
+  (function walk(r,depth){
+    if(depth>2||r.nodeKind==='skip')return;
     if(r.nodeKind==='and'){r.children.forEach(c=>walk(c,depth+1));return;}
-
     if(r.nodeKind==='or'){
       if(r.matched){
         const hits=sampleTerms(r,3,true);
         items.push({ok:true,head:'Primary search terms matched',body:`Found: ${hits.join(', ')}`});
       } else {
         const sample=sampleTerms(r,4,false);
-        items.push({ok:false,head:'No primary search terms found in content',
+        items.push({ok:false,
+          head:'No primary search terms found in content',
           body:`Searched for ${sample.join(', ')}${r.children.length>4?` and ${r.children.length-4} others`:''}`});
       }
       return;
     }
-
     if(r.nodeKind==='not'){
       if(!r.matched){
         const found=firstMatchedLeaf(r.children[0]);
-        items.push({ok:false,head:'Excluded — an exclusion term was found in content',
+        items.push({ok:false,
+          head:'Excluded — an exclusion term was found in content',
           body:found?`Triggered by: ${found}`:'An entry in the exclusion list matched'});
       } else {
-        items.push({ok:true,head:'Exclusion check passed',body:'No excluded terms found in content'});
+        items.push({ok:true,head:'Exclusion check passed',body:'No excluded terms present in content'});
       }
       return;
     }
-
-    if(r.nodeKind==='near'){
-      items.push({ok:r.matched,head:`Proximity check: ${r.detail}`,body:''});
-      return;
-    }
-
-    // Generic leaf
-    if(!r.matched){
-      items.push({ok:false,head:`Failed: ${r.label} ${r.detail||''}`,body:''});
-    }
-  }
-  walk(result,0);
+    if(r.nodeKind==='near'){items.push({ok:r.matched,head:`Proximity check: ${r.detail}`,body:''});return;}
+    if(!r.matched)items.push({ok:false,head:`Failed: ${r.label} ${r.detail||''}`,body:''});
+  })(result,0);
   return items;
 }
 
@@ -419,68 +399,48 @@ function countLeaves(r){
   return r.children.reduce((a,c)=>{const s=countLeaves(c);return{total:a.total+s.total,matched:a.matched+s.matched};},{total:0,matched:0});
 }
 
-// ─── TREE RENDERER ────────────────────────────────────────────────────────────
+// ─── TREE ─────────────────────────────────────────────────────────────────────
 
 const COLLAPSE=10;
 
 function buildTree(result,container,depth=0){
   const isLeaf=!result.children||result.children.length===0;
   const icon=result.nodeKind==='skip'?'⏭':result.matched?'✅':'❌';
-  const el=document.createElement('div'); el.className='tree-node';
-
-  const row=document.createElement('div'); row.className='row';
-  const tog=document.createElement('span'); tog.className='tog';
-  const ic=document.createElement('span'); ic.className='ic'; ic.textContent=icon;
-  const lb=document.createElement('span'); lb.className='lbl';
-
+  const el=document.createElement('div');el.className='tree-node';
+  const row=document.createElement('div');row.className='row';
+  const tog=document.createElement('span');tog.className='tog';
+  const ic=document.createElement('span');ic.className='ic';ic.textContent=icon;
+  const lb=document.createElement('span');lb.className='lbl';
   const kdSpan=document.createElement('span');
   kdSpan.className='kd '+(result.nodeKind==='not'?'not_':result.nodeKind||'');
   kdSpan.textContent=result.label||'';
-
   const dtSpan=document.createElement('span');
-  if(isLeaf||result.nodeKind==='skip'){
-    dtSpan.className=result.nodeKind==='skip'?'dt':result.matched?'hit':'miss';
-  } else {
-    dtSpan.className='dt';
-  }
-  dtSpan.textContent=' '+( result.detail||'');
-
-  lb.appendChild(kdSpan); lb.appendChild(dtSpan);
-  row.appendChild(tog); row.appendChild(ic); row.appendChild(lb);
-  el.appendChild(row); container.appendChild(el);
+  dtSpan.className=isLeaf||result.nodeKind==='skip'?(result.nodeKind==='skip'?'dt':result.matched?'hit':'miss'):'dt';
+  dtSpan.textContent=' '+(result.detail||'');
+  lb.appendChild(kdSpan);lb.appendChild(dtSpan);
+  row.appendChild(tog);row.appendChild(ic);row.appendChild(lb);
+  el.appendChild(row);container.appendChild(el);
 
   if(result.children&&result.children.length>0){
-    const childWrap=document.createElement('div'); childWrap.className='children';
-
-    const visibleKids=result.children.filter(c=>c.nodeKind!=='skip');
-    const shouldCollapse=visibleKids.length>COLLAPSE&&depth>0;
-
-    if(shouldCollapse){
-      const nm=visibleKids.filter(r=>r.matched).length;
-      const nf=visibleKids.length-nm;
-      const btn=document.createElement('span'); btn.className='expand-btn';
-      btn.innerHTML=`▶ Show all ${visibleKids.length} branches (${nm} matched, ${nf} failed)`;
+    const cw=document.createElement('div');cw.className='children';
+    const vk=result.children.filter(c=>c.nodeKind!=='skip');
+    const collapse=vk.length>COLLAPSE&&depth>0;
+    if(collapse){
+      const nm=vk.filter(r=>r.matched).length,nf=vk.length-nm;
+      const btn=document.createElement('span');btn.className='expand-btn';
+      btn.innerHTML=`▶ Show all ${vk.length} branches (${nm} matched, ${nf} failed)`;
       let open=false;
-      btn.onclick=()=>{open=!open;childWrap.style.display=open?'':'none';
-        btn.innerHTML=open?`▼ Collapse branches`:`▶ Show all ${visibleKids.length} branches (${nm} matched, ${nf} failed)`;};
-      el.appendChild(btn); childWrap.style.display='none';
+      btn.onclick=()=>{open=!open;cw.style.display=open?'':'none';
+        btn.innerHTML=open?'▼ Collapse':`▶ Show all ${vk.length} branches (${nm} matched, ${nf} failed)`;};
+      el.appendChild(btn);cw.style.display='none';
     } else {
-      tog.textContent='▾'; row.classList.add('click');
+      tog.textContent='▾';row.classList.add('click');
       row.onclick=()=>{el.classList.toggle('collapsed');tog.textContent=el.classList.contains('collapsed')?'▸':'▾';};
     }
-
-    result.children.forEach(c=>{if(c.nodeKind!=='skip')buildTree(c,childWrap,depth+1);});
-    el.appendChild(childWrap);
+    result.children.forEach(c=>{if(c.nodeKind!=='skip')buildTree(c,cw,depth+1);});
+    el.appendChild(cw);
   }
 }
-
-// ─── TABS ─────────────────────────────────────────────────────────────────────
-
-document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{
-  document.querySelectorAll('.tab,.tab-content').forEach(el=>el.classList.remove('active'));
-  tab.classList.add('active');
-  document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
-}));
 
 // ─── URL FETCHER ──────────────────────────────────────────────────────────────
 
@@ -488,20 +448,23 @@ async function fetchURL(){
   const url=document.getElementById('urlInput').value.trim();
   if(!url)return;
   const status=document.getElementById('fetchStatus');
-  const out=document.getElementById('fetchedText');
-  status.className='status loading'; status.textContent='Fetching…'; out.value='';
+  const btn=document.getElementById('fetchBtn');
+  const out=document.getElementById('contentInput');
+  status.className='fetch-status';status.textContent='Fetching…';btn.classList.add('loading');btn.disabled=true;
   try{
     const res=await fetch('/.netlify/functions/fetch-url',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
     const data=await res.json();
     if(data.error)throw new Error(data.error);
     if(data.warning){
-      status.className='status warn'; status.textContent='⚠ '+data.warning;
-      out.value=''; return;
+      status.className='fetch-status warn';status.textContent='⚠ '+data.warning;
+      out.value='';return;
     }
     out.value=data.text;
-    status.className='status'; status.textContent=`✓ ${data.text.length.toLocaleString()} characters fetched`;
+    status.className='fetch-status ok';status.textContent=`✓ Fetched ${data.text.length.toLocaleString()} characters`;
   }catch(e){
-    status.className='status error'; status.textContent='Error: '+e.message;
+    status.className='fetch-status err';status.textContent='Error: '+e.message;
+  }finally{
+    btn.classList.remove('loading');btn.disabled=false;
   }
 }
 
@@ -517,15 +480,18 @@ function toggleTree(){
   btn.textContent=(open?'▶ Show':'▼ Hide')+' full clause breakdown';
 }
 
-// ─── MAIN CHECK ───────────────────────────────────────────────────────────────
+// ─── CHECK ────────────────────────────────────────────────────────────────────
+
+function truncateUrl(u,max=70){
+  if(!u||u.length<=max)return u;
+  try{const p=new URL(u);return p.hostname+p.pathname.slice(0,max-p.hostname.length)+'…';}
+  catch{return u.slice(0,max)+'…';}
+}
 
 function runCheck(){
   const boolStr=document.getElementById('boolInput').value.trim();
-  const activeTab=document.querySelector('.tab.active').dataset.tab;
-  const content=activeTab==='paste'
-    ?document.getElementById('pasteInput').value.trim()
-    :document.getElementById('fetchedText').value.trim();
-  const url=activeTab==='url'?document.getElementById('urlInput').value.trim():'';
+  const content=document.getElementById('contentInput').value.trim();
+  const url=document.getElementById('urlInput').value.trim();
 
   const verdict=document.getElementById('verdict');
   const whyList=document.getElementById('whyList');
@@ -534,18 +500,18 @@ function runCheck(){
   const treeToggle=document.getElementById('treeToggle');
   const fullTree=document.getElementById('fullTree');
 
-  whyList.innerHTML=''; whyList.style.display='none';
-  statsRow.style.display='none'; divider.style.display='none';
-  treeToggle.style.display='none'; fullTree.innerHTML=''; fullTree.style.display='none';
+  whyList.innerHTML='';whyList.style.display='none';
+  statsRow.style.display='none';divider.style.display='none';
+  treeToggle.style.display='none';fullTree.innerHTML='';fullTree.style.display='none';
 
   if(!boolStr){
     verdict.className='verdict idle';
-    verdict.innerHTML='<div class="verdict-icon">⚠️</div><div><div class="verdict-title">No boolean</div><div class="verdict-sub">Paste a boolean string.</div></div>';
+    verdict.innerHTML='<div class="verdict-icon">⚠️</div><div><div class="verdict-title">No boolean entered</div><div class="verdict-url">Paste a boolean string in the left panel.</div></div>';
     return;
   }
   if(!content){
     verdict.className='verdict idle';
-    verdict.innerHTML='<div class="verdict-icon">⚠️</div><div><div class="verdict-title">No content</div><div class="verdict-sub">Paste text or fetch a URL.</div></div>';
+    verdict.innerHTML='<div class="verdict-icon">⚠️</div><div><div class="verdict-title">No content to test</div><div class="verdict-url">Fetch a URL or paste text directly.</div></div>';
     return;
   }
 
@@ -553,20 +519,21 @@ function runCheck(){
   try{ast=parseBoolean(boolStr);result=evaluate(ast,content,url);}
   catch(e){
     verdict.className='verdict idle';
-    verdict.innerHTML=`<div class="verdict-icon">🚫</div><div><div class="verdict-title">Parse error</div><div class="verdict-sub">${e.message}</div></div>`;
+    verdict.innerHTML=`<div class="verdict-icon">🚫</div><div><div class="verdict-title">Parse error</div><div class="verdict-url">${e.message}</div></div>`;
     return;
   }
 
-  // Verdict banner
+  const sourceLabel=url?`<strong>URL:</strong> ${truncateUrl(url)}`:'<strong>Source:</strong> Pasted text';
+
   if(result.matched){
     verdict.className='verdict match';
-    verdict.innerHTML='<div class="verdict-icon">✅</div><div><div class="verdict-title">WOULD BE INGESTED</div><div class="verdict-sub">This content matches the boolean and would be captured by this search.</div></div>';
+    verdict.innerHTML=`<div class="verdict-icon">✅</div><div><div class="verdict-title">WOULD BE INGESTED</div><div class="verdict-url">${sourceLabel} <strong>matches</strong> this boolean and would be captured.</div></div>`;
   } else {
     verdict.className='verdict nomatch';
-    verdict.innerHTML='<div class="verdict-icon">❌</div><div><div class="verdict-title">WOULD NOT BE INGESTED</div><div class="verdict-sub">This content does not match the boolean and would be excluded from this search.</div></div>';
+    verdict.innerHTML=`<div class="verdict-icon">❌</div><div><div class="verdict-title">WOULD NOT BE INGESTED</div><div class="verdict-url">${sourceLabel} <strong>does not match</strong> this boolean — see reasons below.</div></div>`;
   }
 
-  // Plain-English why list
+  // Why list
   const summary=generateSummary(result);
   if(summary.length){
     whyList.style.display='flex';
@@ -585,7 +552,7 @@ function runCheck(){
   document.getElementById('sTotal').textContent=total;
   statsRow.style.display='flex';
 
-  // Full tree (hidden by default)
+  // Tree
   divider.style.display='';
   treeToggle.style.display='inline-block';
   treeToggle.textContent='▶ Show full clause breakdown';
