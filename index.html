@@ -241,6 +241,13 @@ function tokenise(q){
     else if(up==='OR')t.push(new Tok(TK.OR));
     else if(up==='NOT'){t.push(new Tok(TK.NOT,'NOT'));if(w.endsWith('('))t.push(new Tok(TK.LP));}
     else if(/^NEAR\/\d+$/.test(up))t.push(new Tok(TK.NEAR,w,parseInt(up.slice(5))));
+    else if(w.endsWith(':')&&j<L&&q[j]==='"'){
+      // FIELD:"quoted value" — e.g. LOCATION:"gb" or LANG:"en"
+      const fn=w.slice(0,-1);
+      let k=q.indexOf('"',j+1);if(k<0)k=L;
+      t.push(new Tok(TK.FIELD,`${fn}:${q.slice(j+1,k)}`));
+      j=k+1;
+    }
     else if(w.includes(':')&&!w.startsWith(':')&&!w.endsWith(':'))t.push(new Tok(TK.FIELD,w));
     else t.push(new Tok(TK.WORD,w));
     i=j;
@@ -327,11 +334,19 @@ function evaluate(node,text){
       return{m,label:'phrase',detail:`"${node.value}"`,kids:[],nk:'phrase'};
     }
     case 'word':{
+      // Platform meta-operators — not matchable from text content
+      // RETWEET/RT/QUOTE/REPLY evaluate to false so NOT RETWEET → passes for articles
+      if(/^(RETWEET|RT|QUOTE|REPLY)$/i.test(node.value))
+        return{m:false,label:'word',detail:`"${node.value}" — platform filter, not evaluated`,kids:[],nk:'skip'};
       const w=node.value.replace(/['\.,;:!?*]+$/,'');
       const m=w?new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(t):false;
       return{m,label:'word',detail:`"${node.value}"`,kids:[],nk:'word'};
     }
     case 'field':{
+      const fn=(node.fn||'').toUpperCase();
+      // Platform-level operators — not evaluable from text content
+      if(fn==='LOCATION'||fn==='LANG')
+        return{m:true,label:fn+':',detail:`"${node.fv}" — platform filter, not evaluated`,kids:[],nk:'skip'};
       const fv=node.fv||'';
       const m=fv?t.toLowerCase().includes(fv.toLowerCase()):false;
       return{m,label:node.fn+':',detail:`"${fv}"`,kids:[],nk:'field'};
